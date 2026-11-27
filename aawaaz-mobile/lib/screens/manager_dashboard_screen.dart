@@ -20,16 +20,42 @@ class ManagerDashboardScreen extends StatefulWidget {
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   late BackendService _backend;
   DateTime _date = DateTime.now();
-  late Future<List<RequestDto>> _future;
+
+  bool _loading = true;
+  String? _error;
+  List<RequestDto> _items = [];
+  bool _started = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _backend = context.read<BackendService>();
-    _future = _backend.listRequests(date: _date);
+    if (!_started) {
+      _started = true;
+      _load();
+    }
   }
 
-  void _reload() => setState(() => _future = _backend.listRequests(date: _date));
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final items = await _backend.listRequests(date: _date);
+      if (!mounted) return;
+      setState(() {
+        _items = items;
+        _loading = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.message;
+        _loading = false;
+      });
+    }
+  }
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -40,7 +66,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     );
     if (picked != null) {
       _date = picked;
-      _reload();
+      _load();
     }
   }
 
@@ -73,61 +99,55 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                     style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 IconButton(
-                    onPressed: _reload, icon: const Icon(Icons.refresh)),
+                    onPressed: _loading ? null : _load,
+                    icon: const Icon(Icons.refresh)),
               ],
             ),
           ),
-          Expanded(
-            child: FutureBuilder<List<RequestDto>>(
-              future: _future,
-              builder: (context, snap) {
-                if (snap.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snap.hasError) {
-                  return _ErrorView(
-                      message: _describe(snap.error), onRetry: _reload);
-                }
-                final items = snap.data ?? [];
-                if (items.isEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async => _reload(),
-                    child: ListView(children: const [
-                      SizedBox(height: 240),
-                      Center(child: Text('No requests for this day.')),
-                    ]),
-                  );
-                }
-                return RefreshIndicator(
-                  onRefresh: () async => _reload(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    itemCount: items.length,
-                    itemBuilder: (context, i) => _RequestCard(
-                      request: items[i],
-                      onEdit: () => _editComment(items[i]),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          Expanded(child: _buildBody()),
         ],
       ),
     );
   }
 
+  Widget _buildBody() {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _ErrorView(message: _error!, onRetry: _load);
+    }
+    if (_items.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _load,
+        child: ListView(children: const [
+          SizedBox(height: 240),
+          Center(child: Text('No requests for this day.')),
+        ]),
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: _items.length,
+        itemBuilder: (context, i) => _RequestCard(
+          request: _items[i],
+          onEdit: () => _editComment(_items[i]),
+        ),
+      ),
+    );
+  }
+
   Future<void> _editComment(RequestDto r) async {
-    final saved = await showModalBottomSheet<bool>(
+    await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       builder: (_) => _CommentSheet(request: r, backend: _backend),
     );
-    if (saved == true) _reload();
+    // Always refresh after the sheet closes so an edit is reflected immediately.
+    await _load();
   }
-
-  String _describe(Object? e) =>
-      e is ApiException ? e.message : 'Something went wrong.';
 }
 
 class _RequestCard extends StatelessWidget {

@@ -230,10 +230,14 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [ ] On-device run on the S23 FE (worker + manager flows, dark mode) — for you to do; set
   `API_HOST` to the host LAN IP in `.env` first.
 
-**Current status:** V3 complete (FB, F0–F8). The app runs fully on the backend — in-memory
-layer removed — and the API was verified end to end against a live server. Only follow-up is
-a hands-on run on the S23 FE (set `API_HOST` to the host LAN IP in `.env`). The translation
-engine (SPEC_V2 B6) remains a deliberate stub.
+**Current status:** V3 complete (FB, F0–F8), verified end to end on the S23 FE. The app runs
+fully on the backend — in-memory layer removed. The translation engine (SPEC_V2 B6) remains a
+deliberate stub.
+
+**Post-integration fix:** the manager dashboard didn't refresh in place after a disposition
+(it only updated on re-login). Reworked it from a `FutureBuilder` future-swap to an explicit
+load-into-state model that reloads unconditionally after the edit sheet closes — confirmed
+updating live on device.
 
 ---
 
