@@ -255,23 +255,25 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `PATCH /api/requests/{id}` status + manager comment (sets `commentedAt`/`updatedAt`); 404 if missing.
 - [x] `RequestApiTest` (MockMvc): create, 404/400 cases, priority sort, worker filter, update, 404.
 
-### Step B5 — Category APIs
-- [ ] `GET /api/categories` (§5.4 / G3).
-- [ ] `PUT /api/categories/{key}/priority` (§5.4).
+### Step B5 — Category APIs ✅
+- [x] `GET /api/categories` (§5.4 / G3) — ordered by priority desc.
+- [x] `PUT /api/categories/{key}/priority` (§5.4) — 404 unknown / 400 negative.
+- [x] `CategoryApiTest` (MockMvc): list order, priority update + reorder, 404, validation.
 
-### Step B6 — Translation service
-- [~] `TranslationService` interface in place; wired into request create. **Pass-through stub**
-  for now (`PassThroughTranslationService`) — real engine still to come.
-- [ ] Worker language → manager language on **create**, stored in `translated_text` (§3.1).
-- [ ] Manager→worker translation is **not** backend work — handled by the mobile app (§3.2).
-- [ ] Engine choice (cloud API / library) — TBD.
+### Step B6 — Translation service (deferred for V2)
+- [x] `TranslationService` interface in place and wired into request create, targeting the
+  manager's language and storing `translated_text`/`translated_language` (§3.1).
+- [x] **Decision:** keep the `PassThroughTranslationService` **stub** for V2 (stores the
+  original text as the translation). A real engine is intentionally deferred.
+- [ ] Real engine (cloud API / library) — **parked**; swap in later with no API/schema change.
+- Manager→worker translation stays the mobile app's job (§3.2), not the backend.
 
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** B0–B4 done — persistence, schema+seed, entities/repos, auth+registration,
-and the request APIs are in place and tested (20 tests). Translation is a pass-through stub.
-Next: B5 (category APIs), then B6 (real translation engine).
+**Current status:** Backend complete for V2. B0–B5 done and tested (24 tests); B6's real
+translation engine is intentionally deferred — the pass-through stub stands in for now behind
+a stable `TranslationService` interface. Next phase: point the mobile app at these APIs.
 
 ---
 
