@@ -258,10 +258,11 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Login form; greet on success (→ query flow), error on mismatch.
 
 ### Step 4 — Manager login + dashboard
-- [ ] Hardcoded manager login (`admin` / `admin123`, one constant).
-- [ ] Dashboard: queries grouped date-wise, sorted by category priority (§3.7).
-- [ ] Add comment + change status per query.
-- [ ] Set/adjust category priorities.
+- [x] Hardcoded manager login (`admin` / `admin123`, from `AppConstants`).
+- [x] Dashboard: queries grouped date-wise, sorted by category priority (§3.7).
+- [x] Add comment + change status per query (bottom sheet).
+- [x] Set/adjust category priorities (sliders).
+- [x] Demo seed data at startup so the dashboard is populated (also covers Step 7's seed).
 
 ### Step 5 — Worker query capture (core loop)
 - [ ] TTS prompt in the worker's language (§6).
@@ -277,14 +278,15 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 ### Step 7 — Polish
 - [ ] Regional-language prompt strings (hi/bn/en).
 - [ ] Bigger tap targets, high contrast, icon-first.
-- [ ] Startup demo seed data (workers + sample queries) — needed because data is in-memory.
+- [x] Startup demo seed data (workers + sample queries) — done in Step 4.
 
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Steps 0–3 done (setup, shell, registration form, worker login). A worker
-can now register and log in; login lands on a placeholder for the voice flow. Next up:
-Step 4 (manager login + dashboard), then Step 5 (voice query capture).
+**Current status:** Steps 0–4 done. Manager can log in and see demo-seeded requests grouped
+by date, sorted by priority, and add comments / tune priorities. The only missing core piece
+is **Step 5 (voice query capture)** — the worker side currently ends on a placeholder.
+Next up: Step 5, then Step 6 (My Status).
 
 ---
 

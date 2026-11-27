@@ -8,7 +8,7 @@ import 'screens/home_screen.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppRepository(),
+      create: (_) => AppRepository()..seedDemoData(),
       child: const AawaazApp(),
     ),
   );

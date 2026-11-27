@@ -52,6 +52,13 @@ class AppRepository extends ChangeNotifier {
   bool usernameExists(String username) =>
       _workers.any((w) => w.username.toLowerCase() == username.toLowerCase());
 
+  Worker? workerById(String id) {
+    for (final w in _workers) {
+      if (w.id == id) return w;
+    }
+    return null;
+  }
+
   /// Registers a worker. Returns the new worker, or null if the username is taken.
   Worker? registerWorker({
     required String username,
@@ -92,12 +99,13 @@ class AppRepository extends ChangeNotifier {
     required String languageCode,
     required String categoryKey,
     Urgency urgency = Urgency.normal,
+    DateTime? createdAt,
   }) {
     final query = Query(
       id: _uuid.v4(),
       ticketNo: _nextTicket++,
       workerId: workerId,
-      createdAt: DateTime.now(),
+      createdAt: createdAt ?? DateTime.now(),
       transcript: transcript,
       languageCode: languageCode,
       categoryKey: categoryKey,
@@ -121,5 +129,59 @@ class AppRepository extends ChangeNotifier {
   void setCategoryPriority(String key, int priority) {
     categoryByKey(key).priority = priority;
     notifyListeners();
+  }
+
+  // --- Demo data ---
+
+  bool _seeded = false;
+
+  /// Seeds a few workers and queries so the dashboard isn't empty before the
+  /// voice flow (Step 5) exists. Safe to call more than once. Since V1 is pure
+  /// in-memory, this also gives a mid-demo restart something to show.
+  void seedDemoData() {
+    if (_seeded) return;
+    _seeded = true;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, 9);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final ramesh = registerWorker(
+        username: 'ramesh', name: 'Ramesh', password: '1234', languageCode: 'hi-IN')!;
+    final sita = registerWorker(
+        username: 'sita', name: 'Sita', password: '1234', languageCode: 'bn-IN')!;
+    final john = registerWorker(
+        username: 'john', name: 'John', password: '1234', languageCode: 'en-IN')!;
+
+    addQuery(
+      workerId: john.id,
+      transcript: 'There is a spark near machine 3, it looks dangerous.',
+      languageCode: 'en-IN',
+      categoryKey: 'safety',
+      urgency: Urgency.high,
+      createdAt: today.add(const Duration(hours: 1)),
+    );
+    addQuery(
+      workerId: ramesh.id,
+      transcript: 'Tabiyat theek nahi hai, aaj jaldi jaana hai.',
+      languageCode: 'hi-IN',
+      categoryKey: 'health',
+      urgency: Urgency.high,
+      createdAt: today.add(const Duration(hours: 2)),
+    );
+    addQuery(
+      workerId: sita.id,
+      transcript: 'Ei soptahe ekta advance dorkar.',
+      languageCode: 'bn-IN',
+      categoryKey: 'advance',
+      createdAt: yesterday.add(const Duration(hours: 3)),
+    );
+    addQuery(
+      workerId: ramesh.id,
+      transcript: 'Kal chhutti chahiye.',
+      languageCode: 'hi-IN',
+      categoryKey: 'leave',
+      createdAt: yesterday.add(const Duration(hours: 4)),
+    );
   }
 }
