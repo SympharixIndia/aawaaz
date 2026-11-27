@@ -169,8 +169,11 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `ApiClient` (JSON GET/POST/PATCH/PUT + error mapping to `ApiException`; maps Spring `detail`).
 - [x] `main()` loads `.env`; Android INTERNET permission + `usesCleartextTraffic` for dev.
 
-### Step F1 — Models aligned to backend
-- [ ] Update `Worker`/`Query`/`Category` (or add DTOs) to match backend fields + id types.
+### Step F1 — Models aligned to backend ✅
+- [x] Added backend DTOs (`UserDto`, `RequestDto`, `CategoryDto`) with `fromJson`, reusing the
+  existing `Urgency`/`QueryStatus` enums via an `ApiParse` helper (enum names + timestamps).
+- [x] `api_dto_test` covers parsing, nullable fields, enum defaults, ISO timestamps.
+- Existing in-memory models/screens untouched; F2–F5 migrate screens onto these DTOs.
 
 ### Step F2 — Registration → `POST /api/workers`
 - [ ] Add optional **profession** field; submit to backend; handle 409 duplicate / 400.
@@ -196,9 +199,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB + F0 done — backend get-by-ticket in place; app has its HTTP client,
-`.env` config, and Android networking. Next: F1 (align app models to backend DTOs), then F2+
-(wire each screen). FB–F4 are being committed on one branch/PR.
+**Current status:** FB + F0 + F1 done — backend get-by-ticket; app HTTP client, `.env` config,
+Android networking; backend-aligned DTOs with parsing. Next: F2 (registration → `POST
+/api/workers`). FB–F4 are being committed on one branch/PR (PR #17).
 
 ---
 
