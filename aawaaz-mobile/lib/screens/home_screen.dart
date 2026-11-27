@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 import 'manager_login_screen.dart';
 import 'registration_screen.dart';
+import 'status_by_ticket_screen.dart';
 import 'worker_login_screen.dart';
 
-/// Welcome screen. Three entry points: file a request, register, or manager.
+/// Welcome screen: file a request, check status, register, or manager.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -42,6 +43,12 @@ class HomeScreen extends StatelessWidget {
                 label: 'Register a request',
                 primary: true,
                 onPressed: () => _go(context, const WorkerLoginScreen()),
+              ),
+              const SizedBox(height: 16),
+              _BigButton(
+                icon: Icons.fact_check,
+                label: 'Check request status',
+                onPressed: () => _go(context, const StatusByTicketScreen()),
               ),
               const SizedBox(height: 16),
               _BigButton(

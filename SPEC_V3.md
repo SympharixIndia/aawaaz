@@ -201,11 +201,16 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] Comment + status via `PATCH /api/requests/{id}` (bottom sheet) → reloads.
 - [x] Category priorities via `GET /api/categories` + `PUT .../priority` (slider `onChangeEnd`).
 - [x] Loading / error / retry states throughout.
-- Note: the request payload has no worker **name**, so cards show "Worker #id" for now.
+- [x] Worker **name** now shown on cards (backend adds `workerName` — fixed in F6).
 
-### Step F6 — Worker status-by-ticket (new, §3)
-- [ ] Home "Check request status" entry; ticket entry; `GET /api/requests/{id}`; show + speak.
-- [ ] (Backend endpoint delivered in Step FB.)
+### Step F6 — Worker status-by-ticket (new, §3) ✅
+- [x] Home "Check request status" entry → `StatusByTicketScreen`.
+- [x] Ticket entry → `GET /api/requests/{id}`; shows status + manager reply, auto-speaks it,
+  with a "Play aloud" repeat. 404 → "No request found with that number."
+- [x] Speaks in the request's own `originalLanguage` (the worker's language) — no login needed.
+- [x] **Also fixed:** backend `RequestResponse` now includes `workerName` (resolved via
+  `UserRepository`, batched for lists); the dashboard shows the worker's name instead of
+  "Worker #id".
 
 ### Step F7 — UI alignment pass (§6)
 - [ ] Fix the mic/sound icon alignment on Query Capture (known issue, first).
@@ -214,9 +219,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F5 done. Worker path (register/login/file) and the manager path
-(login/dashboard/comment/priorities) now run against the backend. Remaining: F6 (worker
-status-by-ticket), F7 (UI alignment), F8 (cleanup + end-to-end against the live server).
+**Current status:** FB, F0–F6 done. Worker path (register/login/file/status-by-ticket) and
+manager path (login/dashboard/comment/priorities) run against the backend; dashboard shows
+worker names. Remaining: F7 (UI alignment), F8 (cleanup + end-to-end against the live server).
+(F5 + F6 share branch `v3-f5-manager-dashboard` / PR #18.)
 
 ---
 

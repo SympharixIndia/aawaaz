@@ -6,6 +6,7 @@ import 'api_parse.dart';
 class RequestDto {
   final int id;
   final int workerId;
+  final String? workerName;
   final String originalText;
   final String originalLanguage;
   final String? translatedText;
@@ -22,6 +23,7 @@ class RequestDto {
   RequestDto({
     required this.id,
     required this.workerId,
+    required this.workerName,
     required this.originalText,
     required this.originalLanguage,
     required this.translatedText,
@@ -39,6 +41,7 @@ class RequestDto {
   factory RequestDto.fromJson(Map<String, dynamic> j) => RequestDto(
         id: (j['id'] as num).toInt(),
         workerId: (j['workerId'] as num).toInt(),
+        workerName: j['workerName'] as String?,
         originalText: j['originalText'] as String,
         originalLanguage: j['originalLanguage'] as String,
         translatedText: j['translatedText'] as String?,

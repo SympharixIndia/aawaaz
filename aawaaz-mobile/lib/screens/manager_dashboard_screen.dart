@@ -160,7 +160,8 @@ class _RequestCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('#${request.id} · Worker #${request.workerId}',
+                    child: Text(
+                        '#${request.id} · ${request.workerName ?? 'Worker #${request.workerId}'}',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   if (request.createdAt != null)
