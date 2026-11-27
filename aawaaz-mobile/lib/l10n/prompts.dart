@@ -9,6 +9,7 @@ class Prompts {
   final String retry; // "Let's try again"
   final String noInput; // "I didn't catch that"
   final String tapToSpeak;
+  final String pending; // "Your request is still pending"
 
   const Prompts({
     required this.ask,
@@ -20,10 +21,17 @@ class Prompts {
     required this.retry,
     required this.noInput,
     required this.tapToSpeak,
+    required this.pending,
   });
 
   String confirm(String transcript) => '$confirmPrefix "$transcript". $confirmSuffix';
   String acknowledge(int ticketNo) => '$ackPrefix $ticketNo.';
+
+  /// What to read aloud for a query's status: the manager's reply, else pending.
+  String statusSpeech(String? managerComment) =>
+      (managerComment != null && managerComment.trim().isNotEmpty)
+          ? managerComment
+          : pending;
 
   static const Map<String, Prompts> _byLanguage = {
     'en-IN': Prompts(
@@ -36,6 +44,7 @@ class Prompts {
       retry: "Okay, let's try again.",
       noInput: "I didn't catch that. Please tap the microphone and speak.",
       tapToSpeak: 'Tap to speak',
+      pending: 'Your request is still pending.',
     ),
     'hi-IN': Prompts(
       ask: 'कृपया बताइए आपको क्या चाहिए।',
@@ -47,6 +56,7 @@ class Prompts {
       retry: 'ठीक है, फिर से कोशिश करते हैं।',
       noInput: 'मुझे सुनाई नहीं दिया। कृपया माइक दबाकर बोलिए।',
       tapToSpeak: 'बोलने के लिए दबाएँ',
+      pending: 'आपका अनुरोध अभी लंबित है।',
     ),
     'bn-IN': Prompts(
       ask: 'অনুগ্রহ করে বলুন আপনার কী প্রয়োজন।',
@@ -58,6 +68,7 @@ class Prompts {
       retry: 'ঠিক আছে, আবার চেষ্টা করি।',
       noInput: 'আমি শুনতে পাইনি। অনুগ্রহ করে মাইকে চাপ দিয়ে বলুন।',
       tapToSpeak: 'বলতে চাপ দিন',
+      pending: 'আপনার অনুরোধ এখনও মুলতুবি রয়েছে।',
     ),
   };
 

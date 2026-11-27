@@ -272,21 +272,24 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Store `Query`; speak acknowledgement with ticket number.
 
 ### Step 6 — My Status
-- [ ] List the logged-in worker's queries (newest first).
-- [ ] Play the manager's comment aloud via TTS; "still pending" if none.
+- [x] List the logged-in worker's queries (newest first).
+- [x] Play the manager's comment aloud via TTS; "still pending" if none.
+- [x] Reachable via a "My requests" action from the query-capture screen.
 
 ### Step 7 — Polish
-- [ ] Regional-language prompt strings (hi/bn/en).
+- [x] Regional-language prompt strings (hi/bn/en) — done in Step 5 (`Prompts`).
 - [ ] Bigger tap targets, high contrast, icon-first.
 - [x] Startup demo seed data (workers + sample queries) — done in Step 4.
 
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Steps 0–5 done. The full loop works: a worker logs in, speaks a request
-(or types it), hears it confirmed, and it's filed with a ticket; the manager sees it, sorted
-by priority, and can reply. Last core piece: **Step 6 (My Status)** — the worker hearing the
-manager's reply read back. Then Step 7 polish.
+**Current status:** Steps 0–6 done — the app is feature-complete for V1. Full round trip:
+worker registers → logs in → speaks (or types) a request → hears it confirmed → it's filed
+with a ticket → manager sees it sorted by priority and replies → worker opens "My requests"
+and hears the reply read back. Only remaining work is **Step 7 polish** (UI tap targets /
+contrast; regional prompts already done). Voice I/O still needs a real-device check (STT/TTS
+behavior depends on installed Android hi-IN/bn-IN voices).
 
 ---
 
