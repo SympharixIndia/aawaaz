@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../constants.dart';
+import '../data/api_client.dart';
+import '../data/backend_service.dart';
 import 'manager_dashboard_screen.dart';
 
-/// Manager login gated by hardcoded credentials (V1 only).
+/// Manager login — authenticates against the backend and requires a MANAGER account.
 class ManagerLoginScreen extends StatefulWidget {
   const ManagerLoginScreen({super.key});
 
@@ -16,6 +18,7 @@ class _ManagerLoginScreenState extends State<ManagerLoginScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   String? _error;
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -24,20 +27,35 @@ class _ManagerLoginScreenState extends State<ManagerLoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate() || _submitting) return;
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
 
-    final ok = _username.text.trim() == AppConstants.managerUsername &&
-        _password.text == AppConstants.managerPassword;
-
-    if (!ok) {
-      setState(() => _error = 'Incorrect manager credentials.');
-      return;
+    final backend = context.read<BackendService>();
+    final navigator = Navigator.of(context);
+    try {
+      final user = await backend.login(_username.text, _password.text);
+      if (!mounted) return;
+      if (!user.isManager) {
+        setState(() {
+          _error = 'This is not a manager account.';
+          _submitting = false;
+        });
+        return;
+      }
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (_) => const ManagerDashboardScreen()),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.statusCode == 401 ? 'Incorrect manager credentials.' : e.message;
+        _submitting = false;
+      });
     }
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const ManagerDashboardScreen()),
-    );
   }
 
   @override
@@ -84,10 +102,16 @@ class _ManagerLoginScreenState extends State<ManagerLoginScreen> {
                 ],
                 const SizedBox(height: 32),
                 FilledButton(
-                  onPressed: _submit,
+                  onPressed: _submitting ? null : _submit,
                   style:
                       FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-                  child: const Text('Log in', style: TextStyle(fontSize: 18)),
+                  child: _submitting
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Log in', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

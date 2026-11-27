@@ -45,6 +45,16 @@ String statusLabel(QueryStatus s) => switch (s) {
       QueryStatus.resolved => 'Resolved',
     };
 
+/// Display label for a category key (categories are a fixed, known set).
+String categoryLabel(String key) => switch (key) {
+      'safety' => 'Safety',
+      'health' => 'Health',
+      'early_exit' => 'Early exit',
+      'leave' => 'Leave',
+      'advance' => 'Salary advance',
+      _ => 'Other',
+    };
+
 /// Icon for a category key, so the UI reads at a glance for low-literacy users.
 IconData categoryIcon(String key) => switch (key) {
       'safety' => Icons.warning_amber_rounded,

@@ -138,6 +138,7 @@ class RequestApiTest {
         mvc.perform(get("/api/requests/" + reqId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value((int) reqId))
+                .andExpect(jsonPath("$.workerName").value("W"))
                 .andExpect(jsonPath("$.categoryKey").value("leave"))
                 .andExpect(jsonPath("$.status").value("OPEN"));
     }

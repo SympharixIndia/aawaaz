@@ -10,6 +10,7 @@ import com.sympharix.aawaaz.domain.Urgency;
 public record RequestResponse(
         Long id,
         Long workerId,
+        String workerName,
         String originalText,
         String originalLanguage,
         String translatedText,
@@ -23,9 +24,9 @@ public record RequestResponse(
         Instant createdAt,
         Instant updatedAt) {
 
-    public static RequestResponse from(Request r) {
+    public static RequestResponse from(Request r, String workerName) {
         return new RequestResponse(
-                r.getId(), r.getWorkerId(),
+                r.getId(), r.getWorkerId(), workerName,
                 r.getOriginalText(), r.getOriginalLanguage(),
                 r.getTranslatedText(), r.getTranslatedLanguage(),
                 r.getCategoryKey(), r.getUrgency(), r.getStatus(),

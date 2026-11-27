@@ -194,25 +194,37 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - Note: "My requests" (reached from here) is still in-memory until F6, so a backend-filed
   request won't appear there yet — expected mid-migration.
 
-### Step F5 — Manager login + dashboard
-- [ ] Manager login; dashboard via `GET /api/requests?date=`; comment via `PATCH`;
-      categories via `GET /api/categories` + `PUT .../priority`.
+### Step F5 — Manager login + dashboard ✅
+- [x] Manager login via backend; requires a MANAGER account (else inline error).
+- [x] Dashboard via `GET /api/requests?date=` with a date picker + pull-to-refresh; cards show
+  the manager-language `translatedText`, category/urgency/status, and the reply.
+- [x] Comment + status via `PATCH /api/requests/{id}` (bottom sheet) → reloads.
+- [x] Category priorities via `GET /api/categories` + `PUT .../priority` (slider `onChangeEnd`).
+- [x] Loading / error / retry states throughout.
+- [x] Worker **name** now shown on cards (backend adds `workerName` — fixed in F6).
 
-### Step F6 — Worker status-by-ticket (new, §3)
-- [ ] Home "Check request status" entry; ticket entry; `GET /api/requests/{id}`; show + speak.
-- [ ] (Backend endpoint delivered in Step FB.)
+### Step F6 — Worker status-by-ticket (new, §3) ✅
+- [x] Home "Check request status" entry → `StatusByTicketScreen`.
+- [x] Ticket entry → `GET /api/requests/{id}`; shows status + manager reply, auto-speaks it,
+  with a "Play aloud" repeat. 404 → "No request found with that number."
+- [x] Speaks in the request's own `originalLanguage` (the worker's language) — no login needed.
+- [x] **Also fixed:** backend `RequestResponse` now includes `workerName` (resolved via
+  `UserRepository`, batched for lists); the dashboard shows the worker's name instead of
+  "Worker #id".
 
 ### Step F7 — UI alignment pass (§6)
-- [ ] Fix the mic/sound icon alignment on Query Capture (known issue, first).
-- [ ] Audit + fix alignment across the other screens; verify on device + dark mode.
+- [x] Fix the mic/sound icon alignment on Query Capture — the glyph was pinned top-left
+  because the `Icon` got tight 140×140 constraints; wrapped it in `Center` so it sits in the
+  middle of the circular button.
+- [ ] Remaining on-device audit of other screens (needs a run on the S23 FE) — carried to F8.
 
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F4 done (this branch/PR #17). The worker path — register, log in,
-file a request — now runs against the backend end to end. Remaining for later branches: F5
-(manager login + dashboard), F6 (worker status-by-ticket), F7 (UI alignment), F8 (cleanup +
-end-to-end against the live server).
+**Current status:** FB, F0–F6 done; F7 mic-icon fix done (broader on-device audit carried to
+F8). Worker and manager paths run against the backend; dashboard shows worker names.
+Remaining: F8 (cleanup + on-device alignment audit + end-to-end against the live server).
+(F5–F7 share branch `v3-f5-manager-dashboard` / PR #18.)
 
 ---
 

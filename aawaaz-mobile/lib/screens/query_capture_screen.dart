@@ -341,11 +341,11 @@ class _MicButton extends StatelessWidget {
         child: SizedBox(
           width: 140,
           height: 140,
-          child: Icon(Icons.mic,
-              size: 64,
-              color: onPressed == null
-                  ? scheme.outline
-                  : scheme.onPrimary),
+          child: Center(
+            child: Icon(Icons.mic,
+                size: 64,
+                color: onPressed == null ? scheme.outline : scheme.onPrimary),
+          ),
         ),
       ),
     );

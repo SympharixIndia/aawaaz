@@ -2,7 +2,7 @@
 class CategoryDto {
   final String categoryKey;
   final String label;
-  final int priority;
+  int priority; // mutable so the priorities screen can reflect edits optimistically
   final bool safetyCritical;
 
   CategoryDto({
