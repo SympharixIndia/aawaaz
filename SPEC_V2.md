@@ -247,17 +247,21 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `UserService` + `BCryptPasswordEncoder` (via `spring-security-crypto`, no security filter).
 - [x] `AuthRegistrationTest` (MockMvc): seeded-manager login, wrong password, register→login, duplicate, invalid.
 
-### Step B4 — Request APIs
-- [ ] `POST /api/requests` (§5.3) + English-pivot translation on create.
-- [ ] `GET /api/requests` daily listing with `date`/`status`/`lang` filters + priority sort.
-- [ ] `GET /api/requests?workerId=` worker's own list (§5.3 / G2).
-- [ ] `PATCH /api/requests/{id}` status + manager comment (§5.3).
+### Step B4 — Request APIs ✅
+- [x] `POST /api/requests` (§5.3) — stores verbatim + manager-language translation (via
+  `TranslationService`, currently a pass-through stub). 404 unknown worker / 400 unknown category.
+- [x] `GET /api/requests` daily listing with `date`/`status`/`categoryKey` filters + priority sort.
+- [x] `GET /api/requests?workerId=` worker's own list (§5.3 / G2).
+- [x] `PATCH /api/requests/{id}` status + manager comment (sets `commentedAt`/`updatedAt`); 404 if missing.
+- [x] `RequestApiTest` (MockMvc): create, 404/400 cases, priority sort, worker filter, update, 404.
 
 ### Step B5 — Category APIs
 - [ ] `GET /api/categories` (§5.4 / G3).
 - [ ] `PUT /api/categories/{key}/priority` (§5.4).
 
 ### Step B6 — Translation service
+- [~] `TranslationService` interface in place; wired into request create. **Pass-through stub**
+  for now (`PassThroughTranslationService`) — real engine still to come.
 - [ ] Worker language → manager language on **create**, stored in `translated_text` (§3.1).
 - [ ] Manager→worker translation is **not** backend work — handled by the mobile app (§3.2).
 - [ ] Engine choice (cloud API / library) — TBD.
@@ -265,8 +269,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** B0–B3 done — persistence, schema+seed, entities/repos, and the auth +
-registration APIs are in place and tested (13 tests). Next: B4 (request APIs).
+**Current status:** B0–B4 done — persistence, schema+seed, entities/repos, auth+registration,
+and the request APIs are in place and tested (20 tests). Translation is a pass-through stub.
+Next: B5 (category APIs), then B6 (real translation engine).
 
 ---
 
