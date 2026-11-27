@@ -20,6 +20,7 @@ manager's answer read aloud**.
 | Path | What it is |
 |---|---|
 | [`aawaaz-mobile/`](aawaaz-mobile) | The **V1 Flutter app** (Android) — the current build. |
+| [`aawaaz-backend/`](aawaaz-backend) | The **backend** (Java / Spring Boot) — early scaffold, in progress. |
 | [`SPEC_V1.md`](SPEC_V1.md) | V1 specification and the step-by-step implementation tracker. |
 | [`DESIGN.md`](DESIGN.md) | The longer-term product/architecture vision (web + backend). Not the V1 target. |
 
@@ -96,6 +97,27 @@ flutter test
 > (Settings → Languages & input → voice). Without them, use **"Type instead"** in the query flow.
 
 ---
+
+## Backend (`aawaaz-backend/`)
+
+Early scaffold — a **Spring Boot 4** (Java 17) service with the bundled Maven wrapper, so
+nothing extra to install. Run it:
+
+```bash
+cd aawaaz-backend
+./mvnw spring-boot:run
+```
+
+Then it's up on `http://localhost:8080` — try `GET /` (landing/health JSON), `GET /api/ping`,
+or `GET /actuator/health`. Build / test:
+
+```bash
+cd aawaaz-backend
+./mvnw test
+```
+
+The real APIs (workers, requests, categories, the tamper-evident record) and persistence come
+in later increments — see [`DESIGN.md`](DESIGN.md).
 
 ## Status
 
