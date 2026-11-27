@@ -2,81 +2,132 @@
 
 **Every worker's voice, on record.**
 
-In many factories, hundreds of workers depend on one manager for everything — leave, early
-exits, salary advances, health issues, safety concerns — with no HR team and no system.
-Requests are passed by word of mouth, forgotten, or lost in a crowded shift. Workers who
-can't read or write forms, or are afraid to ask, simply go without.
-
-Aawaaz removes the barrier of forms, screens, and language: a worker walks up, is identified,
-and **speaks their request in their own language**. The app confirms it back, categorizes it,
-and files it on a permanent record. The manager sees every request in one prioritized place —
-safety and health first — and replies. Later, the worker can ask for an update and **hear the
-manager's answer read aloud**.
+Aawaaz is a voice-first system that lets factory workers raise everyday requests — leave,
+early exit, salary advance, health issues, safety concerns — simply by **speaking in their
+own language**, and lets a manager see and act on every request in one prioritized place.
 
 ---
 
-## Repository layout
+## The problem
 
-| Path | What it is |
-|---|---|
-| [`aawaaz-mobile/`](aawaaz-mobile) | The **V1 Flutter app** (Android) — the current build. |
-| [`aawaaz-backend/`](aawaaz-backend) | The **backend** (Java / Spring Boot) — early scaffold, in progress. |
-| [`SPEC_V1.md`](SPEC_V1.md) | V1 specification and the step-by-step implementation tracker. |
-| [`DESIGN.md`](DESIGN.md) | The longer-term product/architecture vision (web + backend). Not the V1 target. |
+In many factories, hundreds of workers depend on a single manager for everything, with no HR
+team and no system. Requests get passed by word of mouth, forgotten, or lost in a crowded
+shift. Workers who can't read or write forms, or who hesitate to ask, simply go without.
+
+Aawaaz removes the barriers of forms, screens, and language. A worker walks up, is identified,
+and says what they need. The app repeats it back to confirm, files it under the right
+category, and gives a spoken acknowledgement with a ticket number. The manager opens a
+dashboard, sees every request sorted by what matters most (safety and health first), and
+replies. The worker can later ask for an update and hear the manager's answer read aloud.
 
 ---
 
-## V1 — the Flutter app
+## What's in the box
 
-A single self-contained Android app. **No backend, no database, all data in memory** (it
-resets when the app closes; demo data is seeded at startup). Deliberately simple, built for a
-hackathon and structured so each piece can be upgraded later.
+Aawaaz has two parts that work together:
 
-### What it does
+| Part | Path | What it is |
+|---|---|---|
+| **Mobile app** | [`aawaaz-mobile/`](aawaaz-mobile) | A Flutter (Android) app — the on-floor voice interface for workers and the dashboard for managers. |
+| **Backend** | [`aawaaz-backend/`](aawaaz-backend) | A Java / Spring Boot service exposing the REST API the app talks to. |
 
-**Worker**
-1. **Register** — username, name, a numeric PIN, and a language (Hindi / Bengali / English).
-2. **Log in** and **file a request** — the app prompts in the worker's language; the worker
-   speaks (or types), the app reads the request back to confirm, categorizes it, and files it
-   with a ticket number, spoken aloud.
-3. **My requests** — hear the current status / manager's reply read aloud.
+Supporting documents: [`DESIGN.md`](DESIGN.md) (product/architecture vision) and the
+`SPEC_*.md` files (detailed specifications).
 
-**Manager** (hardcoded login — default `admin` / `admin123`)
-- One dashboard of all requests, grouped by date and **sorted by priority** (safety & health
-  on top), with an urgency accent for quick scanning.
-- Add a comment and change status (open → in progress → resolved) per request.
-- Tune category priorities with sliders — the dashboard re-sorts live.
+---
 
-### Tech
+## Features
 
-- **Flutter** (Android), `provider` for state, a single in-memory `AppRepository`.
-- **Voice:** `speech_to_text` (capture) + `flutter_tts` (prompts & playback), wrapped in a
-  swappable `VoiceService`. A **"Type instead"** fallback keeps the flow usable where device
-  speech isn't available.
-- **Categorization:** on-device, rule-based keyword matching (`Categorizer`) across the three
-  languages plus romanized forms — isolated behind one call so it can later be swapped for an
-  LLM.
+**For workers**
+- **Register** with a username, name, a numeric PIN, and a preferred language (Hindi,
+  Bengali, or English).
+- **File a request by voice** — the app prompts in the worker's language, the worker speaks,
+  and the app reads the request back to confirm before filing it. Each request gets a spoken
+  **ticket number**. (A "type instead" option is available where speech isn't usable.)
+- **Automatic categorization** — requests are sorted into Safety, Health, Early exit, Leave,
+  Salary advance, or Other, with an urgency level.
+- **Check status** — a worker can look up a request by its ticket number and hear the current
+  status and the manager's reply read aloud in their own language.
 
-### Project structure (`aawaaz-mobile/lib`)
+**For managers**
+- **One prioritized dashboard** of all requests, grouped by day and sorted by category
+  priority (safety and health on top), with an urgency accent for quick scanning.
+- **Reply and resolve** — add a comment and move a request through Open → In progress →
+  Resolved. The worker can then hear that reply.
+- **Tune priorities** — adjust each category's priority; the dashboard re-sorts accordingly.
+
+**Multilingual** — Hindi (`hi-IN`), Bengali (`bn-IN`), and English (`en-IN`), for both speech
+input and spoken output.
+
+---
+
+## How it works
 
 ```
-constants.dart            App config, manager credentials, supported languages
-data/app_repository.dart  Single in-memory store (workers, queries, categories)
-models/                   Worker, Query, Category (+ Urgency, QueryStatus)
-services/
-  voice_service.dart      TTS + STT wrapper
-  categorizer.dart        Rule-based intent → category + urgency
-l10n/prompts.dart         Localized spoken/on-screen strings (hi/bn/en)
-screens/                  Home, registration, worker login, query capture,
-                          my status, manager login, dashboard, priorities
-ui/                       Theme and formatting/icon helpers
+Worker speaks ─▶ App (speech-to-text) ─▶ categorized ─▶ Backend stores the request
+                                                             │
+Manager dashboard ◀── reads requests (prioritized) ──────────┘
+       │
+       └─▶ Manager replies / resolves ─▶ Backend ─▶ Worker hears the reply (text-to-speech)
 ```
+
+- The **app** handles the voice interaction (speech-to-text for capture, text-to-speech for
+  prompts and playback) and on-device categorization, and calls the backend over HTTP.
+- The **backend** stores workers, requests, and categories, authenticates logins, and serves
+  the prioritized request lists and updates.
 
 ---
 
-## Running it
+## Getting started
 
-Requires the [Flutter SDK](https://docs.flutter.dev/get-started/install) (developed on 3.35.x).
+You need two things running: the **backend** (the API) and the **app** (on an emulator or an
+Android phone). Start the backend first.
+
+### Prerequisites
+- **Java 17+** (for the backend; the Maven wrapper is bundled, so Maven itself isn't needed).
+- **Flutter SDK** 3.35.x ([install guide](https://docs.flutter.dev/get-started/install)).
+- An **Android device or emulator**. For a physical phone, keep it on the same Wi-Fi as the
+  computer running the backend.
+
+### 1. Run the backend
+
+```bash
+cd aawaaz-backend
+./mvnw spring-boot:run
+```
+
+The API starts on **`http://localhost:8080`**. It uses an in-memory database that is created
+fresh on each start and seeded with the default manager and the category list. Check it's up:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Run the backend tests with:
+
+```bash
+cd aawaaz-backend
+./mvnw test
+```
+
+### 2. Point the app at the backend
+
+The app reads the backend address from [`aawaaz-mobile/.env`](aawaaz-mobile/.env):
+
+```
+API_SCHEME=http
+API_HOST=10.0.2.2
+API_PORT=8080
+```
+
+Set `API_HOST` for your target:
+- **Android emulator** → `10.0.2.2` (this is the host machine as seen from the emulator).
+- **Physical phone (same Wi-Fi)** → your computer's LAN IP, e.g. `192.168.1.50`
+  (find it with `hostname -I`).
+
+`.env` is read when the app launches, so after changing it do a full restart of the app.
+
+### 3. Run the app
 
 ```bash
 cd aawaaz-mobile
@@ -84,7 +135,10 @@ flutter pub get
 flutter run
 ```
 
-Analyze and test:
+If more than one device is connected, target one explicitly, e.g.
+`flutter run -d <device-id>` (list them with `flutter devices`).
+
+Analyze and test the app:
 
 ```bash
 cd aawaaz-mobile
@@ -92,40 +146,64 @@ flutter analyze
 flutter test
 ```
 
-> **Voice on a device:** speech recognition and text-to-speech use the Android on-device
-> engines, so the `hi-IN` / `bn-IN` / `en-IN` voices must be installed on the device/emulator
-> (Settings → Languages & input → voice). Without them, use **"Type instead"** in the query flow.
+### Default manager login
+- **Username:** `admin`
+- **Password:** `admin123`
 
 ---
 
-## Backend (`aawaaz-backend/`)
+## Using the app
 
-Early scaffold — a **Spring Boot 4** (Java 17) service with the bundled Maven wrapper, so
-nothing extra to install. Run it:
+**As a worker**
+1. On the home screen, tap **Register (new worker)** and create an account (username, name,
+   numeric PIN, language).
+2. Tap **Register a request**, log in with your username + PIN, then speak your request when
+   prompted. Confirm it when the app reads it back — you'll get a ticket number.
+3. Tap **Check request status**, enter your ticket number, and hear the current status and any
+   manager reply.
 
-```bash
-cd aawaaz-backend
-./mvnw spring-boot:run
-```
+**As a manager**
+1. Tap **Manager** and log in with `admin` / `admin123`.
+2. Review the day's requests (safety/health first). Tap one to add a comment and set its
+   status. Use the date picker to view other days and pull down to refresh.
+3. Use the priorities screen to adjust how categories are ranked.
 
-Then it's up on `http://localhost:8080` — try `GET /` (landing/health JSON), `GET /api/ping`,
-or `GET /actuator/health`. Build / test:
+---
 
-```bash
-cd aawaaz-backend
-./mvnw test
-```
+## API reference
 
-The real APIs (workers, requests, categories, the tamper-evident record) and persistence come
-in later increments — see [`DESIGN.md`](DESIGN.md).
+Base URL: `http://<host>:8080`. All JSON.
 
-## Status
+| Method & path | Purpose |
+|---|---|
+| `POST /api/auth/login` | Log in (manager or worker); returns the user. |
+| `POST /api/workers` | Register a worker. |
+| `POST /api/requests` | File a request. |
+| `GET /api/requests?date=YYYY-MM-DD` | Manager listing for a day (priority-sorted). |
+| `GET /api/requests?workerId={id}` | A worker's own requests. |
+| `GET /api/requests/{id}` | Look up a single request by ticket number. |
+| `PATCH /api/requests/{id}` | Manager update: status and/or comment. |
+| `GET /api/categories` | List categories with priorities. |
+| `PUT /api/categories/{key}/priority` | Set a category's priority. |
+| `GET /actuator/health` | Service health check. |
 
-V1 is **feature-complete**: register → log in → speak/type a request → confirm → filed with a
-ticket → manager prioritizes & replies → worker hears the reply. See [`SPEC_V1.md`](SPEC_V1.md)
-for the full tracker. Live voice I/O still needs verification on real hardware.
+---
 
-### What's next (V2)
+## Tech stack
 
-Per [`DESIGN.md`](DESIGN.md): a backend with real persistence, LLM-based categorization, and a
-tamper-evident (hash-chained, append-only) request record.
+- **App:** Flutter (Android), `provider` for state, `speech_to_text` + `flutter_tts` for
+  voice, `http` + `flutter_dotenv` for backend calls.
+- **Backend:** Java 17, Spring Boot 4 (Spring Web MVC, Spring Data JPA), H2 in-memory
+  database, BCrypt password hashing.
+
+---
+
+## Notes
+
+- The backend database is **in-memory**: all data (except the seeded manager and categories)
+  resets each time the backend restarts.
+- Speech uses the Android on-device engines, so the `hi-IN` / `bn-IN` / `en-IN` voices should
+  be installed on the device (Settings → Languages & input → voice). Where a voice isn't
+  available, use the app's "type instead" option.
+- For local development the app talks to the backend over plain HTTP; cleartext traffic is
+  enabled for that purpose.
