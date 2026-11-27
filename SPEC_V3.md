@@ -213,16 +213,18 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
   "Worker #id".
 
 ### Step F7 — UI alignment pass (§6)
-- [ ] Fix the mic/sound icon alignment on Query Capture (known issue, first).
-- [ ] Audit + fix alignment across the other screens; verify on device + dark mode.
+- [x] Fix the mic/sound icon alignment on Query Capture — the glyph was pinned top-left
+  because the `Icon` got tight 140×140 constraints; wrapped it in `Center` so it sits in the
+  middle of the circular button.
+- [ ] Remaining on-device audit of other screens (needs a run on the S23 FE) — carried to F8.
 
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F6 done. Worker path (register/login/file/status-by-ticket) and
-manager path (login/dashboard/comment/priorities) run against the backend; dashboard shows
-worker names. Remaining: F7 (UI alignment), F8 (cleanup + end-to-end against the live server).
-(F5 + F6 share branch `v3-f5-manager-dashboard` / PR #18.)
+**Current status:** FB, F0–F6 done; F7 mic-icon fix done (broader on-device audit carried to
+F8). Worker and manager paths run against the backend; dashboard shows worker names.
+Remaining: F8 (cleanup + on-device alignment audit + end-to-end against the live server).
+(F5–F7 share branch `v3-f5-manager-dashboard` / PR #18.)
 
 ---
 
