@@ -265,11 +265,11 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Demo seed data at startup so the dashboard is populated (also covers Step 7's seed).
 
 ### Step 5 — Worker query capture (core loop)
-- [ ] TTS prompt in the worker's language (§6).
-- [ ] STT capture of the spoken query.
-- [ ] `Categorizer` rule-based keyword matching → category + urgency (§7).
-- [ ] Confirm-back (TTS summary → yes/no).
-- [ ] Store `Query`; speak acknowledgement with ticket number.
+- [x] TTS prompt in the worker's language (§6) via `VoiceService`.
+- [x] STT capture of the spoken query (with a "Type instead" fallback).
+- [x] `Categorizer` rule-based keyword matching → category + urgency (§7).
+- [x] Confirm-back (TTS summary + Yes/No buttons).
+- [x] Store `Query`; speak acknowledgement with ticket number.
 
 ### Step 6 — My Status
 - [ ] List the logged-in worker's queries (newest first).
@@ -283,10 +283,10 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Steps 0–4 done. Manager can log in and see demo-seeded requests grouped
-by date, sorted by priority, and add comments / tune priorities. The only missing core piece
-is **Step 5 (voice query capture)** — the worker side currently ends on a placeholder.
-Next up: Step 5, then Step 6 (My Status).
+**Current status:** Steps 0–5 done. The full loop works: a worker logs in, speaks a request
+(or types it), hears it confirmed, and it's filed with a ticket; the manager sees it, sorted
+by priority, and can reply. Last core piece: **Step 6 (My Status)** — the worker hearing the
+manager's reply read back. Then Step 7 polish.
 
 ---
 
