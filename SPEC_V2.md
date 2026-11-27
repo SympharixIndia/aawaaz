@@ -241,9 +241,11 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] Spring Data repositories (`UserRepository`, `CategoryRepository`, `RequestRepository`).
 - [x] `RepositoryTest` verifies seed reads + a worker/request save round-trip.
 
-### Step B3 — Auth & registration APIs
-- [ ] `POST /api/auth/login` (§5.1).
-- [ ] `POST /api/workers` registration (§5.2), with BCrypt hashing.
+### Step B3 — Auth & registration APIs ✅
+- [x] `POST /api/auth/login` (§5.1) — validates credentials, returns the user; 401 on mismatch.
+- [x] `POST /api/workers` registration (§5.2) — BCrypt hashing; 201 / 409 on duplicate / 400 on invalid.
+- [x] `UserService` + `BCryptPasswordEncoder` (via `spring-security-crypto`, no security filter).
+- [x] `AuthRegistrationTest` (MockMvc): seeded-manager login, wrong password, register→login, duplicate, invalid.
 
 ### Step B4 — Request APIs
 - [ ] `POST /api/requests` (§5.3) + English-pivot translation on create.
@@ -263,8 +265,8 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** B0–B2 done — persistence, schema + seed, and the JPA entity/repository
-layer are in place and tested (8 tests). Next: B3 (auth + registration APIs).
+**Current status:** B0–B3 done — persistence, schema+seed, entities/repos, and the auth +
+registration APIs are in place and tested (13 tests). Next: B4 (request APIs).
 
 ---
 
