@@ -39,7 +39,9 @@ Per target, only `.env` changes:
 - **Android emulator** → `API_HOST=10.0.2.2` (the host from inside the emulator).
 - **Physical device on same Wi-Fi** (e.g. the S23 FE) → `API_HOST=<host-LAN-IP>`
   (e.g. `192.168.1.50`), and the backend must bind to `0.0.0.0`.
-- Commit a **`.env.example`** with placeholders; git-ignore the real `.env`.
+- `.env` is a declared Flutter **asset** (bundled), so it must exist at build time. Since it
+  holds only non-secret host/port, **`.env` is committed** with dev defaults alongside
+  `.env.example` (documentation). Each environment edits `.env` locally.
 
 ### 1.2 Backend prerequisites
 1. **Port:** resolved — use **`8080`** (backend default); no backend port change. ✅
@@ -161,11 +163,11 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step FB — Backend change (get-by-ticket) ✅
 - [x] Add `GET /api/requests/{id}` to the backend (404 if absent) + tests. (§1.2)
 
-### Step F0 — HTTP foundation
-- [ ] Add `http` + `flutter_dotenv`; `.env` (git-ignored) + committed `.env.example`.
-- [ ] `ApiConfig.baseUrl` composed from `API_SCHEME/API_HOST/API_PORT`.
-- [ ] `ApiClient` (JSON GET/POST/PATCH/PUT + error mapping to a simple `ApiException`).
-- [ ] Android: INTERNET permission + cleartext-for-dev.
+### Step F0 — HTTP foundation ✅
+- [x] Add `http` + `flutter_dotenv`; committed `.env` (bundled asset) + `.env.example`.
+- [x] `ApiConfig.baseUrl` composed from `API_SCHEME/API_HOST/API_PORT` (with fallbacks).
+- [x] `ApiClient` (JSON GET/POST/PATCH/PUT + error mapping to `ApiException`; maps Spring `detail`).
+- [x] `main()` loads `.env`; Android INTERNET permission + `usesCleartextTraffic` for dev.
 
 ### Step F1 — Models aligned to backend
 - [ ] Update `Worker`/`Query`/`Category` (or add DTOs) to match backend fields + id types.
@@ -194,8 +196,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB done — backend `GET /api/requests/{id}` added and tested (26 backend
-tests). Next: F0 (http client + `flutter_dotenv` + `.env`/`.env.example` + Android cleartext).
+**Current status:** FB + F0 done — backend get-by-ticket in place; app has its HTTP client,
+`.env` config, and Android networking. Next: F1 (align app models to backend DTOs), then F2+
+(wire each screen). FB–F4 are being committed on one branch/PR.
 
 ---
 
