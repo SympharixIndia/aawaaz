@@ -239,14 +239,14 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### Step 0 — Project setup
 - [x] Flutter project scaffolded at `aawaaz-mobile/` (Android, org `com.sympharix`).
-- [ ] Add dependencies to `pubspec.yaml` (`speech_to_text`, `flutter_tts`, `provider`/`riverpod`, `uuid`).
-- [ ] Android permissions in `AndroidManifest.xml` (microphone / `RECORD_AUDIO`).
+- [x] Add dependencies to `pubspec.yaml` (`speech_to_text`, `flutter_tts`, `provider`, `uuid`).
+- [x] Android permissions in `AndroidManifest.xml` (microphone / `RECORD_AUDIO`, STT/TTS queries).
 
 ### Step 1 — Shell + navigation + in-memory store
-- [ ] Data models: `Worker`, `Query`, `Category` (§4).
-- [ ] In-memory repository (single store, behind one class) with seeded categories.
-- [ ] Home screen: "Register a request", "Register", "Manager" (§3.1).
-- [ ] Routing between screens.
+- [x] Data models: `Worker`, `Query`, `Category` (§4).
+- [x] In-memory repository (`AppRepository`, `ChangeNotifier`) with seeded categories.
+- [x] Home screen: "Register a request", "Register", "Manager" (§3.1).
+- [x] Routing between screens (placeholder screens for Steps 2–4 wired up).
 
 ### Step 2 — Registration (new worker)
 - [ ] Form: username + name + numeric PIN + language (§3.2).
@@ -282,7 +282,8 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Step 0 scaffolded. Next up: Step 0 deps + Step 1 (models, repository, home shell).
+**Current status:** Steps 0 and 1 done (deps, mic permission, models, in-memory repository,
+home shell + routing). Next up: Step 2 (registration form) and Step 3 (worker login).
 
 ---
 
