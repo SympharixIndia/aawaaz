@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../data/api_client.dart';
 import '../data/app_repository.dart';
+import '../data/backend_service.dart';
 import '../l10n/prompts.dart';
 import '../models/worker.dart';
 import '../services/categorizer.dart';
@@ -30,6 +32,7 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
   String _transcript = '';
   CategorizationResult? _result;
   int? _ticketNo;
+  bool _submitting = false;
 
   String get _lang => widget.worker.languageCode;
 
@@ -116,19 +119,31 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
   }
 
   Future<void> _confirmYes() async {
-    final repo = context.read<AppRepository>();
-    final query = repo.addQuery(
-      workerId: widget.worker.id,
-      transcript: _transcript,
-      languageCode: _lang,
-      categoryKey: _result!.categoryKey,
-      urgency: _result!.urgency,
-    );
-    setState(() {
-      _ticketNo = query.ticketNo;
-      _phase = _Phase.done;
-    });
-    await _voice.speak(_p.acknowledge(query.ticketNo), _lang);
+    if (_submitting) return;
+    setState(() => _submitting = true);
+
+    final backend = context.read<BackendService>();
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final request = await backend.createRequest(
+        workerId: int.parse(widget.worker.id),
+        originalText: _transcript,
+        originalLanguage: _lang,
+        categoryKey: _result!.categoryKey,
+        urgency: _result!.urgency,
+      );
+      if (!mounted) return;
+      setState(() {
+        _ticketNo = request.id;
+        _submitting = false;
+        _phase = _Phase.done;
+      });
+      await _voice.speak(_p.acknowledge(request.id), _lang);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 
   Future<void> _confirmNo() async {
@@ -255,7 +270,7 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
           children: [
             Expanded(
               child: FilledButton.tonalIcon(
-                onPressed: _confirmNo,
+                onPressed: _submitting ? null : _confirmNo,
                 style:
                     FilledButton.styleFrom(minimumSize: const Size.fromHeight(64)),
                 icon: const Icon(Icons.close),
@@ -265,10 +280,16 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: FilledButton.icon(
-                onPressed: _confirmYes,
+                onPressed: _submitting ? null : _confirmYes,
                 style:
                     FilledButton.styleFrom(minimumSize: const Size.fromHeight(64)),
-                icon: const Icon(Icons.check),
+                icon: _submitting
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.check),
                 label: Text(_p.yes),
               ),
             ),

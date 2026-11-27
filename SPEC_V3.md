@@ -186,8 +186,13 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] Carries the returned user (id, name, language) into the query flow (mapped to `Worker`
   for now; the query flow itself moves to the backend in F4).
 
-### Step F4 — File request → `POST /api/requests`
-- [ ] Send categoryKey + urgency from the on-device `Categorizer`; show server `id` as ticket.
+### Step F4 — File request → `POST /api/requests` ✅
+- [x] On confirm, `QueryCaptureScreen` posts to the backend via `BackendService.createRequest`,
+  sending `workerId` + `originalText`/`originalLanguage` + on-device `categoryKey`/`urgency`.
+- [x] Speaks the acknowledgement with the **server-assigned id** as the ticket number.
+- [x] Yes/No disabled + spinner while submitting; errors surfaced via snackbar.
+- Note: "My requests" (reached from here) is still in-memory until F6, so a backend-filed
+  request won't appear there yet — expected mid-migration.
 
 ### Step F5 — Manager login + dashboard
 - [ ] Manager login; dashboard via `GET /api/requests?date=`; comment via `PATCH`;
@@ -204,9 +209,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F3 done — backend get-by-ticket; app HTTP client + `.env` + Android
-networking; DTOs; registration and worker login now hit the backend. Next: F4 (file request →
-`POST /api/requests`), the last step on this branch/PR (PR #17).
+**Current status:** FB, F0–F4 done (this branch/PR #17). The worker path — register, log in,
+file a request — now runs against the backend end to end. Remaining for later branches: F5
+(manager login + dashboard), F6 (worker status-by-ticket), F7 (UI alignment), F8 (cleanup +
+end-to-end against the live server).
 
 ---
 

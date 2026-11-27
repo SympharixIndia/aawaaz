@@ -1,3 +1,6 @@
+import '../models/category.dart';
+import '../models/api/api_parse.dart';
+import '../models/api/request_dto.dart';
 import '../models/api/user_dto.dart';
 import 'api_client.dart';
 
@@ -33,4 +36,23 @@ class BackendService {
     });
     return UserDto.fromJson(json as Map<String, dynamic>);
   }
+
+  /// Files a request. Returns the created request (its `id` is the ticket number).
+  Future<RequestDto> createRequest({
+    required int workerId,
+    required String originalText,
+    required String originalLanguage,
+    required String categoryKey,
+    required Urgency urgency,
+  }) async {
+    final json = await _api.post('/api/requests', {
+      'workerId': workerId,
+      'originalText': originalText,
+      'originalLanguage': originalLanguage,
+      'categoryKey': categoryKey,
+      'urgency': ApiParse.urgencyToApi(urgency),
+    });
+    return RequestDto.fromJson(json as Map<String, dynamic>);
+  }
 }
+
