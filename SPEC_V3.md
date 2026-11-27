@@ -180,8 +180,11 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] Async with loading spinner; 409 → "username taken", other errors surfaced; connection errors handled.
 - [x] `BackendService` introduced (wraps `ApiClient`) + provided via `MultiProvider` alongside `AppRepository`.
 
-### Step F3 — Worker login → `POST /api/auth/login`
-- [ ] Authenticate against backend; carry the returned worker (id, language).
+### Step F3 — Worker login → `POST /api/auth/login` ✅
+- [x] `BackendService.login`; worker login authenticates against the backend (async + spinner).
+- [x] 401 → inline "username or password incorrect"; other/connection errors surfaced.
+- [x] Carries the returned user (id, name, language) into the query flow (mapped to `Worker`
+  for now; the query flow itself moves to the backend in F4).
 
 ### Step F4 — File request → `POST /api/requests`
 - [ ] Send categoryKey + urgency from the on-device `Categorizer`; show server `id` as ticket.
@@ -201,9 +204,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F2 done — backend get-by-ticket; app HTTP client + `.env` + Android
-networking; backend-aligned DTOs; registration now posts to the backend via `BackendService`.
-Next: F3 (worker login → `POST /api/auth/login`). FB–F4 on one branch/PR (PR #17).
+**Current status:** FB, F0–F3 done — backend get-by-ticket; app HTTP client + `.env` + Android
+networking; DTOs; registration and worker login now hit the backend. Next: F4 (file request →
+`POST /api/requests`), the last step on this branch/PR (PR #17).
 
 ---
 

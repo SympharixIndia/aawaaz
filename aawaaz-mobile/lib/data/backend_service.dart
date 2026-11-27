@@ -7,6 +7,15 @@ class BackendService {
   final ApiClient _api;
   BackendService([ApiClient? api]) : _api = api ?? ApiClient();
 
+  /// Logs in a manager or worker. Throws [ApiException] (401 on bad credentials).
+  Future<UserDto> login(String username, String password) async {
+    final json = await _api.post('/api/auth/login', {
+      'username': username,
+      'password': password,
+    });
+    return UserDto.fromJson(json as Map<String, dynamic>);
+  }
+
   /// Registers a worker. Throws [ApiException] (409 if the username is taken).
   Future<UserDto> registerWorker({
     required String username,
