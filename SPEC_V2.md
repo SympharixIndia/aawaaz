@@ -235,8 +235,11 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] Verify schema + seed on startup — `SchemaSeedTest` asserts the manager, 6 categories,
   safety's priority, and the empty `requests` table.
 
-### Step B2 — Entities & repositories
-- [ ] JPA entities + Spring Data repositories for the three tables.
+### Step B2 — Entities & repositories ✅
+- [x] JPA entities (`User`, `Category`, `Request`) + enums (`UserType`, `Urgency`,
+  `RequestStatus`) mapped to the schema.
+- [x] Spring Data repositories (`UserRepository`, `CategoryRepository`, `RequestRepository`).
+- [x] `RepositoryTest` verifies seed reads + a worker/request save round-trip.
 
 ### Step B3 — Auth & registration APIs
 - [ ] `POST /api/auth/login` (§5.1).
@@ -260,8 +263,8 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** B0 + B1 done — persistence configured, schema + seed in place and
-verified by tests. Next: B2 (JPA entities + repositories), then B3 (auth + registration APIs).
+**Current status:** B0–B2 done — persistence, schema + seed, and the JPA entity/repository
+layer are in place and tested (8 tests). Next: B3 (auth + registration APIs).
 
 ---
 
