@@ -129,4 +129,22 @@ class RequestApiTest {
                         .content("{\"status\":\"RESOLVED\"}"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getByTicketReturnsTheRequest() throws Exception {
+        long worker = registerWorker("w_ticket");
+        long reqId = fileRequest(worker, "chhutti", "leave", "NORMAL");
+
+        mvc.perform(get("/api/requests/" + reqId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value((int) reqId))
+                .andExpect(jsonPath("$.categoryKey").value("leave"))
+                .andExpect(jsonPath("$.status").value("OPEN"));
+    }
+
+    @Test
+    void getByUnknownTicketIs404() throws Exception {
+        mvc.perform(get("/api/requests/999999"))
+                .andExpect(status().isNotFound());
+    }
 }

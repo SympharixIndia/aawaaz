@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../data/app_repository.dart';
+import '../data/api_client.dart';
+import '../data/backend_service.dart';
+import '../models/api/user_dto.dart';
+import '../models/worker.dart';
 import 'query_capture_screen.dart';
 
-/// Worker login (username + numeric PIN) before filing a request.
+/// Worker login (username + numeric PIN) — authenticates against the backend.
 class WorkerLoginScreen extends StatefulWidget {
   const WorkerLoginScreen({super.key});
 
@@ -18,6 +21,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
   final _username = TextEditingController();
   final _pin = TextEditingController();
   String? _error;
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -26,21 +30,39 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+  /// Carries the authenticated user into the (currently in-memory) query flow.
+  Worker _toWorker(UserDto u) => Worker(
+        id: u.id.toString(),
+        username: u.username,
+        name: u.name,
+        password: '',
+        languageCode: u.languageCode,
+        registeredAt: DateTime.now(),
+      );
 
-    final worker = context
-        .read<AppRepository>()
-        .authenticateWorker(_username.text, _pin.text);
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate() || _submitting) return;
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
 
-    if (worker == null) {
-      setState(() => _error = 'Username or password incorrect.');
-      return;
+    final backend = context.read<BackendService>();
+    final navigator = Navigator.of(context);
+    try {
+      final user = await backend.login(_username.text, _pin.text);
+      if (!mounted) return;
+      navigator.pushReplacement(MaterialPageRoute(
+          builder: (_) => QueryCaptureScreen(worker: _toWorker(user))));
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.statusCode == 401
+            ? 'Username or password incorrect.'
+            : e.message;
+        _submitting = false;
+      });
     }
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => QueryCaptureScreen(worker: worker)),
-    );
   }
 
   @override
@@ -90,11 +112,17 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                 ],
                 const SizedBox(height: 32),
                 FilledButton(
-                  onPressed: _submit,
+                  onPressed: _submitting ? null : _submit,
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
                   ),
-                  child: const Text('Continue', style: TextStyle(fontSize: 18)),
+                  child: _submitting
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Continue', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

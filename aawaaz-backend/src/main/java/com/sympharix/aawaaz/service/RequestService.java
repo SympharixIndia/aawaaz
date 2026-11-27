@@ -74,6 +74,12 @@ public class RequestService {
         return requests.findByWorkerIdOrderByCreatedAtDesc(workerId);
     }
 
+    /** One request by its id (= ticket number). 404 if absent. */
+    public Request get(Long id) {
+        return requests.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+    }
+
     /**
      * Manager listing: optionally filtered by day/status/category, sorted by category
      * priority (safety/health first) then newest first.

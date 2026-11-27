@@ -39,7 +39,9 @@ Per target, only `.env` changes:
 - **Android emulator** → `API_HOST=10.0.2.2` (the host from inside the emulator).
 - **Physical device on same Wi-Fi** (e.g. the S23 FE) → `API_HOST=<host-LAN-IP>`
   (e.g. `192.168.1.50`), and the backend must bind to `0.0.0.0`.
-- Commit a **`.env.example`** with placeholders; git-ignore the real `.env`.
+- `.env` is a declared Flutter **asset** (bundled), so it must exist at build time. Since it
+  holds only non-secret host/port, **`.env` is committed** with dev defaults alongside
+  `.env.example` (documentation). Each environment edits `.env` locally.
 
 ### 1.2 Backend prerequisites
 1. **Port:** resolved — use **`8080`** (backend default); no backend port change. ✅
@@ -158,26 +160,39 @@ Broader checks:
 
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
-### Step FB — Backend change (get-by-ticket)
-- [ ] Add `GET /api/requests/{id}` to the backend (404 if absent) + a test. (§1.2)
+### Step FB — Backend change (get-by-ticket) ✅
+- [x] Add `GET /api/requests/{id}` to the backend (404 if absent) + tests. (§1.2)
 
-### Step F0 — HTTP foundation
-- [ ] Add `http` + `flutter_dotenv`; `.env` (git-ignored) + committed `.env.example`.
-- [ ] `ApiConfig.baseUrl` composed from `API_SCHEME/API_HOST/API_PORT`.
-- [ ] `ApiClient` (JSON GET/POST/PATCH/PUT + error mapping to a simple `ApiException`).
-- [ ] Android: INTERNET permission + cleartext-for-dev.
+### Step F0 — HTTP foundation ✅
+- [x] Add `http` + `flutter_dotenv`; committed `.env` (bundled asset) + `.env.example`.
+- [x] `ApiConfig.baseUrl` composed from `API_SCHEME/API_HOST/API_PORT` (with fallbacks).
+- [x] `ApiClient` (JSON GET/POST/PATCH/PUT + error mapping to `ApiException`; maps Spring `detail`).
+- [x] `main()` loads `.env`; Android INTERNET permission + `usesCleartextTraffic` for dev.
 
-### Step F1 — Models aligned to backend
-- [ ] Update `Worker`/`Query`/`Category` (or add DTOs) to match backend fields + id types.
+### Step F1 — Models aligned to backend ✅
+- [x] Added backend DTOs (`UserDto`, `RequestDto`, `CategoryDto`) with `fromJson`, reusing the
+  existing `Urgency`/`QueryStatus` enums via an `ApiParse` helper (enum names + timestamps).
+- [x] `api_dto_test` covers parsing, nullable fields, enum defaults, ISO timestamps.
+- Existing in-memory models/screens untouched; F2–F5 migrate screens onto these DTOs.
 
-### Step F2 — Registration → `POST /api/workers`
-- [ ] Add optional **profession** field; submit to backend; handle 409 duplicate / 400.
+### Step F2 — Registration → `POST /api/workers` ✅
+- [x] Added optional **profession** field; submits to backend via `BackendService`.
+- [x] Async with loading spinner; 409 → "username taken", other errors surfaced; connection errors handled.
+- [x] `BackendService` introduced (wraps `ApiClient`) + provided via `MultiProvider` alongside `AppRepository`.
 
-### Step F3 — Worker login → `POST /api/auth/login`
-- [ ] Authenticate against backend; carry the returned worker (id, language).
+### Step F3 — Worker login → `POST /api/auth/login` ✅
+- [x] `BackendService.login`; worker login authenticates against the backend (async + spinner).
+- [x] 401 → inline "username or password incorrect"; other/connection errors surfaced.
+- [x] Carries the returned user (id, name, language) into the query flow (mapped to `Worker`
+  for now; the query flow itself moves to the backend in F4).
 
-### Step F4 — File request → `POST /api/requests`
-- [ ] Send categoryKey + urgency from the on-device `Categorizer`; show server `id` as ticket.
+### Step F4 — File request → `POST /api/requests` ✅
+- [x] On confirm, `QueryCaptureScreen` posts to the backend via `BackendService.createRequest`,
+  sending `workerId` + `originalText`/`originalLanguage` + on-device `categoryKey`/`urgency`.
+- [x] Speaks the acknowledgement with the **server-assigned id** as the ticket number.
+- [x] Yes/No disabled + spinner while submitting; errors surfaced via snackbar.
+- Note: "My requests" (reached from here) is still in-memory until F6, so a backend-filed
+  request won't appear there yet — expected mid-migration.
 
 ### Step F5 — Manager login + dashboard
 - [ ] Manager login; dashboard via `GET /api/requests?date=`; comment via `PATCH`;
@@ -194,7 +209,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** drafting. Nothing implemented yet.
+**Current status:** FB, F0–F4 done (this branch/PR #17). The worker path — register, log in,
+file a request — now runs against the backend end to end. Remaining for later branches: F5
+(manager login + dashboard), F6 (worker status-by-ticket), F7 (UI alignment), F8 (cleanup +
+end-to-end against the live server).
 
 ---
 

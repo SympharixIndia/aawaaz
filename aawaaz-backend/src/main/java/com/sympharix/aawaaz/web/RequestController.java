@@ -57,6 +57,12 @@ public class RequestController {
         return result.stream().map(RequestResponse::from).toList();
     }
 
+    /** One request by its id (= ticket number) — the worker's status-by-ticket lookup. */
+    @GetMapping("/{id}")
+    public RequestResponse getById(@PathVariable Long id) {
+        return RequestResponse.from(requestService.get(id));
+    }
+
     /** Manager update: status and/or comment. */
     @PatchMapping("/{id}")
     public RequestResponse update(
