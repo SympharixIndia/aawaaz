@@ -233,18 +233,56 @@ All data lives in app memory and **is lost when the app closes**. No `hive` /
 
 ---
 
-## 10. Build order (hackathon-friendly)
+## 10. Implementation tracker (incremental build)
 
-1. **Shell + navigation + in-memory store** (Home, routes, the repository with seeded categories).
-2. **Registration** (username + name + numeric PIN + language → save Worker). Show registered list.
-3. **Worker login** (username + PIN form → authenticate against the in-memory list).
-4. **Manager login + dashboard** (hardcoded creds; list queries date-wise; add comment; set priority).
-5. **Worker query capture** (TTS prompt → STT → categorize → confirm → store). The core loop.
-6. **My Status** (play manager comments back).
-7. Polish: regional-language prompts, bigger tap targets, acknowledgement voice, demo seed data.
+Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
-All seven steps are now lightweight — the voice loop (step 5) is the centerpiece, and
-nothing depends on camera/ML.
+### Step 0 — Project setup
+- [x] Flutter project scaffolded at `aawaaz-mobile/` (Android, org `com.sympharix`).
+- [ ] Add dependencies to `pubspec.yaml` (`speech_to_text`, `flutter_tts`, `provider`/`riverpod`, `uuid`).
+- [ ] Android permissions in `AndroidManifest.xml` (microphone / `RECORD_AUDIO`).
+
+### Step 1 — Shell + navigation + in-memory store
+- [ ] Data models: `Worker`, `Query`, `Category` (§4).
+- [ ] In-memory repository (single store, behind one class) with seeded categories.
+- [ ] Home screen: "Register a request", "Register", "Manager" (§3.1).
+- [ ] Routing between screens.
+
+### Step 2 — Registration (new worker)
+- [ ] Form: username + name + numeric PIN + language (§3.2).
+- [ ] Save `Worker` to repository; reject duplicate username.
+- [ ] (Optional dev aid) list of registered workers.
+
+### Step 3 — Worker login
+- [ ] `IdentityService.authenticate(username, pin)` (§5).
+- [ ] Login form/dialog; greet on success, error on mismatch.
+
+### Step 4 — Manager login + dashboard
+- [ ] Hardcoded manager login (`admin` / `admin123`, one constant).
+- [ ] Dashboard: queries grouped date-wise, sorted by category priority (§3.7).
+- [ ] Add comment + change status per query.
+- [ ] Set/adjust category priorities.
+
+### Step 5 — Worker query capture (core loop)
+- [ ] TTS prompt in the worker's language (§6).
+- [ ] STT capture of the spoken query.
+- [ ] `Categorizer` rule-based keyword matching → category + urgency (§7).
+- [ ] Confirm-back (TTS summary → yes/no).
+- [ ] Store `Query`; speak acknowledgement with ticket number.
+
+### Step 6 — My Status
+- [ ] List the logged-in worker's queries (newest first).
+- [ ] Play the manager's comment aloud via TTS; "still pending" if none.
+
+### Step 7 — Polish
+- [ ] Regional-language prompt strings (hi/bn/en).
+- [ ] Bigger tap targets, high contrast, icon-first.
+- [ ] Startup demo seed data (workers + sample queries) — needed because data is in-memory.
+
+> The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
+> fully demoable app.
+
+**Current status:** Step 0 scaffolded. Next up: Step 0 deps + Step 1 (models, repository, home shell).
 
 ---
 
