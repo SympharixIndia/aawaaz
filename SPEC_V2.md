@@ -255,9 +255,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `PATCH /api/requests/{id}` status + manager comment (sets `commentedAt`/`updatedAt`); 404 if missing.
 - [x] `RequestApiTest` (MockMvc): create, 404/400 cases, priority sort, worker filter, update, 404.
 
-### Step B5 — Category APIs
-- [ ] `GET /api/categories` (§5.4 / G3).
-- [ ] `PUT /api/categories/{key}/priority` (§5.4).
+### Step B5 — Category APIs ✅
+- [x] `GET /api/categories` (§5.4 / G3) — ordered by priority desc.
+- [x] `PUT /api/categories/{key}/priority` (§5.4) — 404 unknown / 400 negative.
+- [x] `CategoryApiTest` (MockMvc): list order, priority update + reorder, 404, validation.
 
 ### Step B6 — Translation service
 - [~] `TranslationService` interface in place; wired into request create. **Pass-through stub**
@@ -269,9 +270,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** B0–B4 done — persistence, schema+seed, entities/repos, auth+registration,
-and the request APIs are in place and tested (20 tests). Translation is a pass-through stub.
-Next: B5 (category APIs), then B6 (real translation engine).
+**Current status:** B0–B5 done — persistence, schema+seed, entities/repos, and all the APIs
+(auth, registration, requests, categories) are in place and tested (24 tests). The only
+remaining backend work is **B6** — replacing the pass-through translation stub with a real
+engine (engine choice TBD).
 
 ---
 
