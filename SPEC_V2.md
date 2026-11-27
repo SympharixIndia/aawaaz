@@ -16,8 +16,12 @@ specified in [`SPEC_V1.md`](SPEC_V1.md); the long-term vision is in [`DESIGN.md`
 - **Service:** Java / **Spring Boot 4** (Java 17), in `aawaaz-backend/` (scaffold already merged).
 - **Database:** **in-memory H2** only (hackathon). Data resets on every restart; schema and
   seed data are recreated on each start. No Postgres/persistence in V2.
-- **Migrations:** **Flyway** owns the schema and seeds default data (manager + categories).
-  Hibernate `ddl-auto=none` — Flyway is the single source of truth for schema.
+- **Schema & seed:** **Spring Boot SQL init** (`schema.sql` + `data.sql`) creates the tables
+  and seeds default data (manager + categories) on every startup. Hibernate `ddl-auto=none`.
+  *(Flyway was the original plan, but its H2 support module isn't published to Maven Central
+  for Spring Boot 4's Flyway version — only in Redgate's auth-gated repo — and Flyway's
+  versioning adds nothing to an in-memory DB that resets each run. Flyway can return for
+  Postgres later, where its DB module is on Central.)*
 - **Passwords:** stored as **BCrypt hashes**, never plaintext.
 - **Out of scope for now:** the tamper-evident hash-chained record from `DESIGN.md`; real
   auth tokens/sessions; multi-factory support. (Can be revisited later.)
@@ -131,7 +135,7 @@ language for display/playback. The backend just serves the stored manager-langua
 
 ---
 
-## 4. Default seed data (via Flyway)
+## 4. Default seed data (via `data.sql`)
 
 - **Manager:** `admin` / `admin123` (BCrypt), `language_code = en-IN`.
 - **Categories:** the six rows in §2.2.
@@ -220,14 +224,16 @@ allowed on categories — they are otherwise static; no create/delete.)
 
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
-### Step B0 — Persistence setup
-- [ ] Add dependencies: `spring-boot-starter-data-jpa`, `h2` (runtime), `flyway-core`.
-- [ ] Configure H2 in-memory datasource + `spring.jpa.hibernate.ddl-auto=none` + Flyway + H2 console.
+### Step B0 — Persistence setup ✅
+- [x] Add dependencies: `spring-boot-starter-data-jpa`, `h2` (runtime).
+- [x] Configure H2 in-memory datasource + `spring.jpa.hibernate.ddl-auto=none` +
+  `spring.sql.init.mode=always` + H2 console.
 
-### Step B1 — Schema & seed (§2 data model)
-- [ ] Flyway `V1__init_schema.sql`: `users`, `categories`, `requests` + indexes + constraints.
-- [ ] Seed default manager (`admin`/`admin123`, BCrypt) and the six categories.
-- [ ] Verify Flyway applies cleanly on startup (app boots, tables + seed present).
+### Step B1 — Schema & seed (§2 data model) ✅
+- [x] `schema.sql`: `users`, `categories`, `requests` + indexes + constraints.
+- [x] `data.sql`: seed default manager (`admin`/`admin123`, BCrypt) and the six categories.
+- [x] Verify schema + seed on startup — `SchemaSeedTest` asserts the manager, 6 categories,
+  safety's priority, and the empty `requests` table.
 
 ### Step B2 — Entities & repositories
 - [ ] JPA entities + Spring Data repositories for the three tables.
@@ -254,7 +260,8 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Later
 - [ ] Point the mobile app at the backend (incl. app-side manager→worker reply translation).
 
-**Current status:** Data model + API surface drafted and awaiting review. Nothing implemented yet.
+**Current status:** B0 + B1 done — persistence configured, schema + seed in place and
+verified by tests. Next: B2 (JPA entities + repositories), then B3 (auth + registration APIs).
 
 ---
 
