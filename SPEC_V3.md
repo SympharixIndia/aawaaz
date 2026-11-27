@@ -194,9 +194,14 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - Note: "My requests" (reached from here) is still in-memory until F6, so a backend-filed
   request won't appear there yet — expected mid-migration.
 
-### Step F5 — Manager login + dashboard
-- [ ] Manager login; dashboard via `GET /api/requests?date=`; comment via `PATCH`;
-      categories via `GET /api/categories` + `PUT .../priority`.
+### Step F5 — Manager login + dashboard ✅
+- [x] Manager login via backend; requires a MANAGER account (else inline error).
+- [x] Dashboard via `GET /api/requests?date=` with a date picker + pull-to-refresh; cards show
+  the manager-language `translatedText`, category/urgency/status, and the reply.
+- [x] Comment + status via `PATCH /api/requests/{id}` (bottom sheet) → reloads.
+- [x] Category priorities via `GET /api/categories` + `PUT .../priority` (slider `onChangeEnd`).
+- [x] Loading / error / retry states throughout.
+- Note: the request payload has no worker **name**, so cards show "Worker #id" for now.
 
 ### Step F6 — Worker status-by-ticket (new, §3)
 - [ ] Home "Check request status" entry; ticket entry; `GET /api/requests/{id}`; show + speak.
@@ -209,10 +214,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB, F0–F4 done (this branch/PR #17). The worker path — register, log in,
-file a request — now runs against the backend end to end. Remaining for later branches: F5
-(manager login + dashboard), F6 (worker status-by-ticket), F7 (UI alignment), F8 (cleanup +
-end-to-end against the live server).
+**Current status:** FB, F0–F5 done. Worker path (register/login/file) and the manager path
+(login/dashboard/comment/priorities) now run against the backend. Remaining: F6 (worker
+status-by-ticket), F7 (UI alignment), F8 (cleanup + end-to-end against the live server).
 
 ---
 

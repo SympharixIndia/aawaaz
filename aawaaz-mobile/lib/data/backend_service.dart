@@ -1,5 +1,7 @@
 import '../models/category.dart';
+import '../models/query.dart';
 import '../models/api/api_parse.dart';
+import '../models/api/category_dto.dart';
 import '../models/api/request_dto.dart';
 import '../models/api/user_dto.dart';
 import 'api_client.dart';
@@ -54,5 +56,66 @@ class BackendService {
     });
     return RequestDto.fromJson(json as Map<String, dynamic>);
   }
+
+  /// Manager listing: optional day/status/category filters; backend returns it
+  /// sorted by category priority then newest first.
+  Future<List<RequestDto>> listRequests({
+    DateTime? date,
+    String? status,
+    String? categoryKey,
+  }) async {
+    final query = <String, dynamic>{};
+    if (date != null) query['date'] = _ymd(date);
+    if (status != null) query['status'] = status;
+    if (categoryKey != null) query['categoryKey'] = categoryKey;
+    final json = await _api.get('/api/requests', query: query);
+    return (json as List)
+        .map((e) => RequestDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// A worker's own requests, newest first.
+  Future<List<RequestDto>> requestsForWorker(int workerId) async {
+    final json = await _api.get('/api/requests', query: {'workerId': workerId});
+    return (json as List)
+        .map((e) => RequestDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// One request by ticket number (worker status lookup). 404 if absent.
+  Future<RequestDto> requestByTicket(int id) async {
+    final json = await _api.get('/api/requests/$id');
+    return RequestDto.fromJson(json as Map<String, dynamic>);
+  }
+
+  /// Manager update: status and/or comment (comment language defaults server-side).
+  Future<RequestDto> updateRequest(
+    int id, {
+    QueryStatus? status,
+    String? managerComment,
+  }) async {
+    final body = <String, dynamic>{};
+    if (status != null) body['status'] = ApiParse.statusToApi(status);
+    if (managerComment != null) body['managerComment'] = managerComment;
+    final json = await _api.patch('/api/requests/$id', body);
+    return RequestDto.fromJson(json as Map<String, dynamic>);
+  }
+
+  Future<List<CategoryDto>> listCategories() async {
+    final json = await _api.get('/api/categories');
+    return (json as List)
+        .map((e) => CategoryDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<CategoryDto> setCategoryPriority(String key, int priority) async {
+    final json = await _api.put('/api/categories/$key/priority', {'priority': priority});
+    return CategoryDto.fromJson(json as Map<String, dynamic>);
+  }
+
+  static String _ymd(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
+      '${d.month.toString().padLeft(2, '0')}-'
+      '${d.day.toString().padLeft(2, '0')}';
 }
 
