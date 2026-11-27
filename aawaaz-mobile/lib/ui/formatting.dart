@@ -44,3 +44,13 @@ String statusLabel(QueryStatus s) => switch (s) {
       QueryStatus.inProgress => 'In progress',
       QueryStatus.resolved => 'Resolved',
     };
+
+/// Icon for a category key, so the UI reads at a glance for low-literacy users.
+IconData categoryIcon(String key) => switch (key) {
+      'safety' => Icons.warning_amber_rounded,
+      'health' => Icons.healing,
+      'early_exit' => Icons.logout,
+      'leave' => Icons.event_busy,
+      'advance' => Icons.currency_rupee,
+      _ => Icons.help_outline,
+    };

@@ -76,6 +76,8 @@ class _StatusCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                Icon(categoryIcon(category.key), size: 20, color: scheme.primary),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text('#${query.ticketNo} · ${category.label}',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
