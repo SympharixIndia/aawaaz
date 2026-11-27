@@ -278,18 +278,18 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### Step 7 — Polish
 - [x] Regional-language prompt strings (hi/bn/en) — done in Step 5 (`Prompts`).
-- [ ] Bigger tap targets, high contrast, icon-first.
+- [x] Bigger tap targets, high contrast, icon-first (central `aawaazTheme`, category icons,
+  urgency accent on dashboard cards, light + dark theme).
 - [x] Startup demo seed data (workers + sample queries) — done in Step 4.
 
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Steps 0–6 done — the app is feature-complete for V1. Full round trip:
-worker registers → logs in → speaks (or types) a request → hears it confirmed → it's filed
-with a ticket → manager sees it sorted by priority and replies → worker opens "My requests"
-and hears the reply read back. Only remaining work is **Step 7 polish** (UI tap targets /
-contrast; regional prompts already done). Voice I/O still needs a real-device check (STT/TTS
-behavior depends on installed Android hi-IN/bn-IN voices).
+**Current status:** All steps (0–7) done — V1 is complete. Full round trip works end to end
+with a polished, icon-first, light/dark theme. The one thing not verifiable in this
+environment is live voice I/O: STT/TTS behavior depends on the installed Android hi-IN/bn-IN
+voices, so it needs a real-device check. The "Type instead" fallback makes the flow fully
+demoable regardless.
 
 ---
 

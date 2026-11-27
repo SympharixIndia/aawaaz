@@ -94,8 +94,15 @@ class _QueryCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: InkWell(
         onTap: () => _editComment(context),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: urgencyColor(query.urgency, scheme),
+                width: 6,
+              ),
+            ),
+          ),
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,6 +124,7 @@ class _QueryCard extends StatelessWidget {
                 spacing: 8,
                 children: [
                   Chip(
+                    avatar: Icon(categoryIcon(category.key), size: 18),
                     label: Text(category.label),
                     visualDensity: VisualDensity.compact,
                   ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'constants.dart';
 import 'data/app_repository.dart';
 import 'screens/home_screen.dart';
+import 'ui/theme.dart';
 
 void main() {
   runApp(
@@ -22,10 +23,8 @@ class AawaazApp extends StatelessWidget {
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00695C)),
-        useMaterial3: true,
-      ),
+      theme: aawaazTheme(Brightness.light),
+      darkTheme: aawaazTheme(Brightness.dark),
       home: const HomeScreen(),
     );
   }

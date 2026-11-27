@@ -234,7 +234,10 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
         Wrap(
           spacing: 8,
           children: [
-            Chip(label: Text(category.label)),
+            Chip(
+              avatar: Icon(categoryIcon(category.key), size: 18),
+              label: Text(category.label),
+            ),
             Chip(
               label: Text(urgencyLabel(_result!.urgency)),
               side: BorderSide(color: urgencyColor(_result!.urgency, scheme)),
