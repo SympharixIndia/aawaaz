@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
-import '../data/app_repository.dart';
+import '../data/api_client.dart';
+import '../data/backend_service.dart';
 
-/// New-worker registration: username + name + numeric PIN + language.
+/// New-worker registration: username + name + numeric PIN + profession + language.
+/// Submits to the backend (`POST /api/workers`).
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -18,38 +20,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _username = TextEditingController();
   final _name = TextEditingController();
   final _pin = TextEditingController();
+  final _profession = TextEditingController();
   String _languageCode = supportedLanguages.first.code;
+  bool _submitting = false;
 
   @override
   void dispose() {
     _username.dispose();
     _name.dispose();
     _pin.dispose();
+    _profession.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate() || _submitting) return;
+    setState(() => _submitting = true);
 
-    final repo = context.read<AppRepository>();
-    final worker = repo.registerWorker(
-      username: _username.text,
-      name: _name.text,
-      password: _pin.text,
-      languageCode: _languageCode,
-    );
+    final backend = context.read<BackendService>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
-    if (worker == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('That username is already taken.')),
+    try {
+      final worker = await backend.registerWorker(
+        username: _username.text,
+        name: _name.text,
+        password: _pin.text,
+        profession: _profession.text.trim().isEmpty ? null : _profession.text.trim(),
+        languageCode: _languageCode,
       );
-      return;
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(
+          content: Text('Registered ${worker.name}. You can now file a request.')));
+      navigator.pop();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      final msg = e.statusCode == 409
+          ? 'That username is already taken.'
+          : e.message;
+      messenger.showSnackBar(SnackBar(content: Text(msg)));
+      setState(() => _submitting = false);
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Registered ${worker.name}. You can now file a request.')),
-    );
-    Navigator.of(context).pop();
   }
 
   @override
@@ -89,6 +100,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  controller: _profession,
+                  decoration: const InputDecoration(
+                    labelText: 'Profession (optional)',
+                    helperText: 'e.g. operator, helper',
+                    border: OutlineInputBorder(),
+                  ),
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
                   controller: _pin,
                   decoration: const InputDecoration(
                     labelText: 'Numeric password (PIN)',
@@ -120,11 +141,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SizedBox(height: 32),
                 FilledButton(
-                  onPressed: _submit,
+                  onPressed: _submitting ? null : _submit,
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
                   ),
-                  child: const Text('Register', style: TextStyle(fontSize: 18)),
+                  child: _submitting
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Register', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

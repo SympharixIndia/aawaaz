@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'constants.dart';
 import 'data/app_repository.dart';
+import 'data/backend_service.dart';
 import 'screens/home_screen.dart';
 import 'ui/theme.dart';
 
@@ -16,8 +17,11 @@ Future<void> main() async {
     // ApiConfig provides sensible defaults when .env isn't present.
   }
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppRepository()..seedDemoData(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppRepository()..seedDemoData()),
+        Provider<BackendService>(create: (_) => BackendService()),
+      ],
       child: const AawaazApp(),
     ),
   );

@@ -175,8 +175,10 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `api_dto_test` covers parsing, nullable fields, enum defaults, ISO timestamps.
 - Existing in-memory models/screens untouched; F2–F5 migrate screens onto these DTOs.
 
-### Step F2 — Registration → `POST /api/workers`
-- [ ] Add optional **profession** field; submit to backend; handle 409 duplicate / 400.
+### Step F2 — Registration → `POST /api/workers` ✅
+- [x] Added optional **profession** field; submits to backend via `BackendService`.
+- [x] Async with loading spinner; 409 → "username taken", other errors surfaced; connection errors handled.
+- [x] `BackendService` introduced (wraps `ApiClient`) + provided via `MultiProvider` alongside `AppRepository`.
 
 ### Step F3 — Worker login → `POST /api/auth/login`
 - [ ] Authenticate against backend; carry the returned worker (id, language).
@@ -199,9 +201,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** FB + F0 + F1 done — backend get-by-ticket; app HTTP client, `.env` config,
-Android networking; backend-aligned DTOs with parsing. Next: F2 (registration → `POST
-/api/workers`). FB–F4 are being committed on one branch/PR (PR #17).
+**Current status:** FB, F0–F2 done — backend get-by-ticket; app HTTP client + `.env` + Android
+networking; backend-aligned DTOs; registration now posts to the backend via `BackendService`.
+Next: F3 (worker login → `POST /api/auth/login`). FB–F4 on one branch/PR (PR #17).
 
 ---
 
