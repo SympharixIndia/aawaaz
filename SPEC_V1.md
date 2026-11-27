@@ -249,13 +249,13 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Routing between screens (placeholder screens for Steps 2–4 wired up).
 
 ### Step 2 — Registration (new worker)
-- [ ] Form: username + name + numeric PIN + language (§3.2).
-- [ ] Save `Worker` to repository; reject duplicate username.
-- [ ] (Optional dev aid) list of registered workers.
+- [x] Form: username + name + numeric PIN + language (§3.2).
+- [x] Save `Worker` to repository; reject duplicate username.
+- [ ] (Optional dev aid) list of registered workers. *(skipped for now)*
 
 ### Step 3 — Worker login
-- [ ] `IdentityService.authenticate(username, pin)` (§5).
-- [ ] Login form/dialog; greet on success, error on mismatch.
+- [x] Authenticate via `AppRepository.authenticateWorker(username, pin)` (§5).
+- [x] Login form; greet on success (→ query flow), error on mismatch.
 
 ### Step 4 — Manager login + dashboard
 - [ ] Hardcoded manager login (`admin` / `admin123`, one constant).
@@ -282,8 +282,9 @@ Built step by step. Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 > The voice loop (Step 5) is the centerpiece; nothing depends on camera/ML. Steps 1–6 give a
 > fully demoable app.
 
-**Current status:** Steps 0 and 1 done (deps, mic permission, models, in-memory repository,
-home shell + routing). Next up: Step 2 (registration form) and Step 3 (worker login).
+**Current status:** Steps 0–3 done (setup, shell, registration form, worker login). A worker
+can now register and log in; login lands on a placeholder for the voice flow. Next up:
+Step 4 (manager login + dashboard), then Step 5 (voice query capture).
 
 ---
 
