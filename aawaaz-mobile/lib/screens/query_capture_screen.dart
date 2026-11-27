@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../data/api_client.dart';
-import '../data/app_repository.dart';
 import '../data/backend_service.dart';
 import '../l10n/prompts.dart';
 import '../models/worker.dart';
@@ -234,8 +233,7 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
 
   Widget _buildConfirming() {
     final scheme = Theme.of(context).colorScheme;
-    final category =
-        context.read<AppRepository>().categoryByKey(_result!.categoryKey);
+    final categoryKey = _result!.categoryKey;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -250,8 +248,8 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
           spacing: 8,
           children: [
             Chip(
-              avatar: Icon(categoryIcon(category.key), size: 18),
-              label: Text(category.label),
+              avatar: Icon(categoryIcon(categoryKey), size: 18),
+              label: Text(categoryLabel(categoryKey)),
             ),
             Chip(
               label: Text(urgencyLabel(_result!.urgency)),

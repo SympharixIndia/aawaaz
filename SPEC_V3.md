@@ -218,13 +218,22 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
   middle of the circular button.
 - [ ] Remaining on-device audit of other screens (needs a run on the S23 FE) — carried to F8.
 
-### Step F8 — Cleanup & end-to-end
-- [ ] Remove in-memory seed; loading/error states; run app against the live backend.
+### Step F8 — Cleanup & end-to-end ✅
+- [x] `MyStatusScreen` rewired to the backend (`GET /api/requests?workerId=`); query-capture
+  confirm uses local `categoryLabel`/`categoryIcon`.
+- [x] Removed the in-memory layer: deleted `AppRepository` + its test + `seedDemoData`;
+  `main` now provides only `BackendService`; stripped the unused `Query`/`Category` classes
+  (kept the `QueryStatus`/`Urgency` enums).
+- [x] Loading/error/retry states on all data screens.
+- [x] **Live end-to-end** against the running backend (curl): register → login →
+  file → get-by-ticket (shows `workerName`) → manager PATCH → worker list → categories. All pass.
+- [ ] On-device run on the S23 FE (worker + manager flows, dark mode) — for you to do; set
+  `API_HOST` to the host LAN IP in `.env` first.
 
-**Current status:** FB, F0–F6 done; F7 mic-icon fix done (broader on-device audit carried to
-F8). Worker and manager paths run against the backend; dashboard shows worker names.
-Remaining: F8 (cleanup + on-device alignment audit + end-to-end against the live server).
-(F5–F7 share branch `v3-f5-manager-dashboard` / PR #18.)
+**Current status:** V3 complete (FB, F0–F8). The app runs fully on the backend — in-memory
+layer removed — and the API was verified end to end against a live server. Only follow-up is
+a hands-on run on the S23 FE (set `API_HOST` to the host LAN IP in `.env`). The translation
+engine (SPEC_V2 B6) remains a deliberate stub.
 
 ---
 
