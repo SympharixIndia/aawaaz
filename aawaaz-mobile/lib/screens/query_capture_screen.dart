@@ -7,6 +7,7 @@ import '../models/worker.dart';
 import '../services/categorizer.dart';
 import '../services/voice_service.dart';
 import '../ui/formatting.dart';
+import 'my_status_screen.dart';
 
 enum _Phase { loading, ready, listening, confirming, done }
 
@@ -142,7 +143,19 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Namaste, ${widget.worker.name}')),
+      appBar: AppBar(
+        title: Text('Namaste, ${widget.worker.name}'),
+        actions: [
+          IconButton(
+            tooltip: 'My requests',
+            icon: const Icon(Icons.list_alt),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => MyStatusScreen(worker: widget.worker)),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
