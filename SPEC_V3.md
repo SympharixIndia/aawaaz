@@ -158,8 +158,8 @@ Broader checks:
 
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
-### Step FB — Backend change (get-by-ticket)
-- [ ] Add `GET /api/requests/{id}` to the backend (404 if absent) + a test. (§1.2)
+### Step FB — Backend change (get-by-ticket) ✅
+- [x] Add `GET /api/requests/{id}` to the backend (404 if absent) + tests. (§1.2)
 
 ### Step F0 — HTTP foundation
 - [ ] Add `http` + `flutter_dotenv`; `.env` (git-ignored) + committed `.env.example`.
@@ -194,7 +194,8 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step F8 — Cleanup & end-to-end
 - [ ] Remove in-memory seed; loading/error states; run app against the live backend.
 
-**Current status:** drafting. Nothing implemented yet.
+**Current status:** FB done — backend `GET /api/requests/{id}` added and tested (26 backend
+tests). Next: F0 (http client + `flutter_dotenv` + `.env`/`.env.example` + Android cleartext).
 
 ---
 
