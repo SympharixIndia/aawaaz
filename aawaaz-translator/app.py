@@ -14,6 +14,7 @@ Models (AI4Bharat, MIT):
   - ai4bharat/indictrans2-indic-en-dist-200M
 """
 
+import os
 from contextlib import asynccontextmanager
 
 import torch
@@ -22,6 +23,10 @@ from pydantic import BaseModel
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 from IndicTransToolkit.processor import IndicProcessor
+
+# Gated models: used when weights aren't already cached (e.g. local run).
+# In the Docker image the weights are baked in at build time, so this is unused there.
+HF_TOKEN = os.environ.get("HF_TOKEN")
 
 EN_INDIC_MODEL = "ai4bharat/indictrans2-en-indic-dist-200M"
 INDIC_EN_MODEL = "ai4bharat/indictrans2-indic-en-dist-200M"
@@ -37,8 +42,8 @@ _state: dict = {}
 
 
 def _load(name: str):
-    tokenizer = AutoTokenizer.from_pretrained(name, trust_remote_code=True)
-    model = AutoModelForSeq2SeqLM.from_pretrained(name, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(name, trust_remote_code=True, token=HF_TOKEN)
+    model = AutoModelForSeq2SeqLM.from_pretrained(name, trust_remote_code=True, token=HF_TOKEN)
     model.eval()
     return tokenizer, model
 
