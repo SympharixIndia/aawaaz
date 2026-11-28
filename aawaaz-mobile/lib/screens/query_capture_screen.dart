@@ -188,12 +188,13 @@ class _QueryCaptureScreenState extends State<QueryCaptureScreen> {
   Widget _buildReady() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(_p.ask,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 40),
-        _MicButton(onPressed: _sttAvailable ? _listen : null),
+        Center(child: _MicButton(onPressed: _sttAvailable ? _listen : null)),
         const SizedBox(height: 16),
         Text(_sttAvailable ? _p.tapToSpeak : 'Speech not available',
             style: TextStyle(color: Theme.of(context).colorScheme.outline)),
