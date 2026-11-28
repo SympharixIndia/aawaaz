@@ -57,10 +57,13 @@ public class SarvamTranslationService implements TranslationService {
                     .retrieve()
                     .body(Map.class);
             Object translated = response == null ? null : response.get("translated_text");
-            return translated != null ? translated.toString() : text;
+            String result = translated == null ? null : translated.toString();
+            // Fallback: if the API gave no usable translation, store the original text.
+            return (result != null && !result.isBlank()) ? result : text;
         } catch (Exception e) {
+            // Any Sarvam error (4xx/5xx, timeout, network) → store the original text.
             log.warn("Sarvam translate failed ({} -> {}): {}", fromLang, toLang, e.toString());
-            return text; // graceful fallback: keep the original
+            return text;
         }
     }
 }
