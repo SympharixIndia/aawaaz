@@ -156,43 +156,47 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
       `POST api.sarvam.ai/translate` with `api-subscription-key`; app locale codes pass through.
 - [x] Config `sarvam.*` (key via `SARVAM_API_KEY`); blank-key / error → pass-through fallback.
 - [x] Removed the self-hosted `aawaaz-translator/` service and the pass-through stub.
-- [ ] Validate live with the real key (sample hi/bn↔en) once the backend runs with `SARVAM_API_KEY`.
+- [x] Validated live with the real key: hi→en ("I need a holiday tomorrow") and en→bn both 200.
 
-### Step V4-1 — Worker → English (backend)
-- [ ] On create, translate `original_language → en` and store in `translated_text` (`en-IN`),
+### Step V4-1 — Worker → English (backend) ✅
+- [x] On create, translate `original_language → en` and store in `translated_text` (`en-IN`),
       regardless of manager language. (Dashboard already reads `translated_text`.)
 
-### Step V4-2 — Manager → worker language (backend)
-- [ ] On manager comment, translate → worker's language; store/serve it to the worker.
-- [ ] App: My Requests + status-by-ticket show/play the worker-language reply.
+### Step V4-2 — Manager → worker language ✅
+- [x] On manager comment, translate → worker's language; store `manager_comment_translated`
+      (+ language) and expose it in `RequestResponse`.
+- [x] App: `RequestDto.workerReply`; My Requests + status-by-ticket show/play the
+      worker-language reply.
 
-### Step V4-3 — Voice number POC
-- [ ] Log `speech_to_text` output for spoken ticket numbers (hi/bn/en) on device.
-- [ ] Build the spoken-number → integer normalizer (Indic numerals + number words).
+### Step V4-3 — Voice number normalization ✅
+- [x] `parseSpokenTicket()` — ASCII digits, Devanagari/Bengali numerals, and digit-by-digit
+      number words (en/hi/bn) → int; unit-tested (8 cases).
+- [ ] Confirm on-device what `speech_to_text` returns for spoken numbers (tune if needed).
 
-### Step V4-4 — Voice ticket entry (app)
-- [ ] Gate "Check request status" behind worker login; use the worker's profile language.
-- [ ] Mic + TTS prompt ("tell me your ticket number") in that language.
-- [ ] Capture → normalize → `GET /api/requests/{id}`; manual typing stays as fallback.
+### Step V4-4 — Voice ticket entry (app) ✅
+- [x] "Check request status" is gated behind worker login (`WorkerLoginScreen` now takes a
+      `destination`); uses the worker's profile language.
+- [x] `StatusByTicketScreen(worker)`: mic + TTS prompt in that language → STT →
+      `parseSpokenTicket` → `GET /api/requests/{id}`; typed entry stays as fallback.
 
-### Step V4-W — Web build (Feature 4, §6)
-- [ ] Add web support (`flutter create --platforms=web .`); run via `flutter run -d chrome`.
-- [ ] Add backend CORS for `/api/**` + `/actuator/**`.
-- [ ] Web `.env` host (`localhost` / server IP); verify mic/speech in the browser.
-- [ ] Produce `build/web/` and confirm the full flow works in a browser.
+### Step V4-W — Web build (Feature 4, §6) ✅
+- [x] Added web support (`web/`); `flutter build web` compiles cleanly (speech/TTS/http all OK).
+- [x] Backend CORS (`CorsConfig`, open for the demo) so the browser app can call the API.
+- [ ] For a browser demo set `.env` `API_HOST=localhost` (or server IP); verify mic in Chrome.
 
-### Step V4-D — Dockerize & deploy (single EC2, §9)
-- [ ] `aawaaz-backend/Dockerfile` (JRE, runs the Spring Boot jar); `EXPOSE 8080`.
-- [ ] Deploy to the EC2 with `SARVAM_API_KEY` injected at runtime; open 8080; allow outbound
-      HTTPS to `api.sarvam.ai`. (`docker run` or an optional single-service compose.)
+### Step V4-D — Dockerize & deploy (single EC2, §9) ✅
+- [x] `aawaaz-backend/Dockerfile` — multi-stage (build jar with `mvnw` → run on JRE), `EXPOSE 8080`.
+- [ ] On the EC2: `docker build`, then `docker run -e SARVAM_API_KEY=... -p 8080:8080`; allow
+      outbound HTTPS to `api.sarvam.ai`.
 
 ### Step V4-5 — Polish & verify
 - [ ] End-to-end on device: worker speaks (lang) → English on dashboard → manager replies →
       worker hears it in their language → voice ticket lookup works.
 
-**Current status:** Translation engine switched to **Sarvam** and wired into the backend
-(`SarvamTranslationService`, V4-0 done); self-hosted translator removed. Next: V4-1 (store
-worker requests as English) and V4-2 (translate manager replies to the worker's language).
+**Current status:** All V4 steps implemented on branch `v4-features` — Sarvam translation,
+English-canonical requests, worker-language replies, login-gated voice ticket entry, web build
++ CORS, and the backend Dockerfile. Remaining is hands-on verification (voice on device, the
+browser demo, and the EC2 deploy with the real key).
 
 ---
 

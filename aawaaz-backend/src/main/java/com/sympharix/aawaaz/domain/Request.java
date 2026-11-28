@@ -53,6 +53,12 @@ public class Request {
     @Column(name = "manager_comment_language")
     private String managerCommentLanguage;
 
+    @Column(name = "manager_comment_translated")
+    private String managerCommentTranslated;
+
+    @Column(name = "manager_comment_translated_language")
+    private String managerCommentTranslatedLanguage;
+
     @Column(name = "commented_at")
     private Instant commentedAt;
 
@@ -155,6 +161,22 @@ public class Request {
 
     public void setManagerCommentLanguage(String managerCommentLanguage) {
         this.managerCommentLanguage = managerCommentLanguage;
+    }
+
+    public String getManagerCommentTranslated() {
+        return managerCommentTranslated;
+    }
+
+    public void setManagerCommentTranslated(String managerCommentTranslated) {
+        this.managerCommentTranslated = managerCommentTranslated;
+    }
+
+    public String getManagerCommentTranslatedLanguage() {
+        return managerCommentTranslatedLanguage;
+    }
+
+    public void setManagerCommentTranslatedLanguage(String managerCommentTranslatedLanguage) {
+        this.managerCommentTranslatedLanguage = managerCommentTranslatedLanguage;
     }
 
     public Instant getCommentedAt() {

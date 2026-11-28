@@ -119,6 +119,9 @@ class RequestApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("RESOLVED"))
                 .andExpect(jsonPath("$.managerComment").value("Approved"))
+                // Reply is also exposed translated for the worker (worker is hi-IN).
+                .andExpect(jsonPath("$.managerCommentTranslatedLanguage").value("hi-IN"))
+                .andExpect(jsonPath("$.managerCommentTranslated").isNotEmpty())
                 .andExpect(jsonPath("$.commentedAt").isNotEmpty());
     }
 

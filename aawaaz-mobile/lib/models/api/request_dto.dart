@@ -16,6 +16,8 @@ class RequestDto {
   final QueryStatus status;
   final String? managerComment;
   final String? managerCommentLanguage;
+  final String? managerCommentTranslated;
+  final String? managerCommentTranslatedLanguage;
   final DateTime? commentedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -33,10 +35,18 @@ class RequestDto {
     required this.status,
     required this.managerComment,
     required this.managerCommentLanguage,
+    required this.managerCommentTranslated,
+    required this.managerCommentTranslatedLanguage,
     required this.commentedAt,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  /// The manager's reply in the worker's language (falls back to the original).
+  String? get workerReply =>
+      (managerCommentTranslated != null && managerCommentTranslated!.trim().isNotEmpty)
+          ? managerCommentTranslated
+          : managerComment;
 
   factory RequestDto.fromJson(Map<String, dynamic> j) => RequestDto(
         id: (j['id'] as num).toInt(),
@@ -51,6 +61,8 @@ class RequestDto {
         status: ApiParse.status(j['status'] as String?),
         managerComment: j['managerComment'] as String?,
         managerCommentLanguage: j['managerCommentLanguage'] as String?,
+        managerCommentTranslated: j['managerCommentTranslated'] as String?,
+        managerCommentTranslatedLanguage: j['managerCommentTranslatedLanguage'] as String?,
         commentedAt: ApiParse.dateTime(j['commentedAt']),
         createdAt: ApiParse.dateTime(j['createdAt']),
         updatedAt: ApiParse.dateTime(j['updatedAt']),
