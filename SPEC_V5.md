@@ -129,8 +129,11 @@ Images travel as base64 in JSON (fits our existing APIs; note payload size).
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
 ### Step V5-0 — Face server POC (gates V5-1+)
-- [ ] `aawaaz-face/` Python/FastAPI with `POST /embed` (InsightFace/ONNX).
-- [ ] Spike: enrol + match a few faces; pick a threshold; record accuracy + CPU latency.
+- [x] `aawaaz-face/` Python/FastAPI with `POST /embed` + `/health` (InsightFace `buffalo_l`,
+      ONNX/CPU); returns an L2-normalized 512-d embedding; 422 on no/multiple faces. Dockerfile
+      (model baked in) + README.
+- [ ] Spike on a host: build, embed a few faces, pick a cosine threshold, record CPU latency.
+      (Can't run in CI — needs the model + real photos.)
 
 ### Step V5-1 — Data model
 - [ ] `users`: add `face_embedding`; schema + `User` entity + repository.
@@ -150,4 +153,5 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step V5-5 — Verify
 - [ ] End-to-end on device: register with face → face login on both worker entries → PIN backup works.
 
-**Current status:** drafting; POC not started.
+**Current status:** V5-0 face server scaffolded (`aawaaz-face/`). Next: V5-1 (data model —
+`face_embedding` on `users`), then V5-2 (registration with photo).
