@@ -103,6 +103,14 @@ fresh on each start and seeded with the default manager and the category list. C
 curl http://localhost:8080/actuator/health
 ```
 
+**Translation** (worker speech → English for the manager; manager reply → the worker's
+language) uses the [Sarvam](https://sarvam.ai) API. Provide a key via the environment to enable
+it; without it, text is stored/shown untranslated:
+
+```bash
+SARVAM_API_KEY=your_key_here ./mvnw spring-boot:run
+```
+
 Run the backend tests with:
 
 ```bash
@@ -137,6 +145,17 @@ flutter run
 
 If more than one device is connected, target one explicitly, e.g.
 `flutter run -d <device-id>` (list them with `flutter devices`).
+
+**In a browser (web):** the app also builds for the web.
+
+```bash
+cd aawaaz-mobile
+flutter run -d chrome          # or: flutter build web  → serve build/web/
+```
+
+For the web build set `API_HOST=localhost` (a browser can't use the emulator's `10.0.2.2`). The
+backend enables CORS for this. Microphone/speech works on `http://localhost` or HTTPS (Chrome
+recommended); the "type instead" options cover anything speech can't.
 
 Analyze and test the app:
 
@@ -189,12 +208,27 @@ Base URL: `http://<host>:8080`. All JSON.
 
 ---
 
+## Deploying the backend (Docker)
+
+The backend ships a `Dockerfile`, so a single container is all the server needs (translation is
+a hosted API — nothing else to run):
+
+```bash
+cd aawaaz-backend
+docker build -t aawaaz-backend .
+docker run -p 8080:8080 -e SARVAM_API_KEY=your_key_here aawaaz-backend
+```
+
+Point the app's `API_HOST` at the host's address and allow outbound HTTPS to `api.sarvam.ai`.
+
+---
+
 ## Tech stack
 
-- **App:** Flutter (Android), `provider` for state, `speech_to_text` + `flutter_tts` for
+- **App:** Flutter (Android + web), `provider` for state, `speech_to_text` + `flutter_tts` for
   voice, `http` + `flutter_dotenv` for backend calls.
 - **Backend:** Java 17, Spring Boot 4 (Spring Web MVC, Spring Data JPA), H2 in-memory
-  database, BCrypt password hashing.
+  database, BCrypt password hashing. Translation via the Sarvam API.
 
 ---
 

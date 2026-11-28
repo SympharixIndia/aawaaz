@@ -179,24 +179,24 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] `StatusByTicketScreen(worker)`: mic + TTS prompt in that language → STT →
       `parseSpokenTicket` → `GET /api/requests/{id}`; typed entry stays as fallback.
 
-### Step V4-W — Web build (Feature 4, §6)
-- [ ] Add web support (`flutter create --platforms=web .`); run via `flutter run -d chrome`.
-- [ ] Add backend CORS for `/api/**` + `/actuator/**`.
-- [ ] Web `.env` host (`localhost` / server IP); verify mic/speech in the browser.
-- [ ] Produce `build/web/` and confirm the full flow works in a browser.
+### Step V4-W — Web build (Feature 4, §6) ✅
+- [x] Added web support (`web/`); `flutter build web` compiles cleanly (speech/TTS/http all OK).
+- [x] Backend CORS (`CorsConfig`, open for the demo) so the browser app can call the API.
+- [ ] For a browser demo set `.env` `API_HOST=localhost` (or server IP); verify mic in Chrome.
 
-### Step V4-D — Dockerize & deploy (single EC2, §9)
-- [ ] `aawaaz-backend/Dockerfile` (JRE, runs the Spring Boot jar); `EXPOSE 8080`.
-- [ ] Deploy to the EC2 with `SARVAM_API_KEY` injected at runtime; open 8080; allow outbound
-      HTTPS to `api.sarvam.ai`. (`docker run` or an optional single-service compose.)
+### Step V4-D — Dockerize & deploy (single EC2, §9) ✅
+- [x] `aawaaz-backend/Dockerfile` — multi-stage (build jar with `mvnw` → run on JRE), `EXPOSE 8080`.
+- [ ] On the EC2: `docker build`, then `docker run -e SARVAM_API_KEY=... -p 8080:8080`; allow
+      outbound HTTPS to `api.sarvam.ai`.
 
 ### Step V4-5 — Polish & verify
 - [ ] End-to-end on device: worker speaks (lang) → English on dashboard → manager replies →
       worker hears it in their language → voice ticket lookup works.
 
-**Current status:** V4-0 through V4-4 done on branch `v4-features` — Sarvam translation,
-English-canonical requests, worker-language replies, and login-gated **voice ticket entry**.
-Next on this branch: V4-W (web build + CORS), V4-D (backend Dockerfile / EC2).
+**Current status:** All V4 steps implemented on branch `v4-features` — Sarvam translation,
+English-canonical requests, worker-language replies, login-gated voice ticket entry, web build
++ CORS, and the backend Dockerfile. Remaining is hands-on verification (voice on device, the
+browser demo, and the EC2 deploy with the real key).
 
 ---
 
