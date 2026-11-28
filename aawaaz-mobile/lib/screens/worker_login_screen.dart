@@ -8,9 +8,11 @@ import '../models/api/user_dto.dart';
 import '../models/worker.dart';
 import 'query_capture_screen.dart';
 
-/// Worker login (username + numeric PIN) — authenticates against the backend.
+/// Worker login (username + numeric PIN) — authenticates against the backend,
+/// then navigates to [destination] (defaults to the query-capture flow).
 class WorkerLoginScreen extends StatefulWidget {
-  const WorkerLoginScreen({super.key});
+  final Widget Function(Worker worker)? destination;
+  const WorkerLoginScreen({super.key, this.destination});
 
   @override
   State<WorkerLoginScreen> createState() => _WorkerLoginScreenState();
@@ -52,8 +54,9 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
     try {
       final user = await backend.login(_username.text, _pin.text);
       if (!mounted) return;
-      navigator.pushReplacement(MaterialPageRoute(
-          builder: (_) => QueryCaptureScreen(worker: _toWorker(user))));
+      final worker = _toWorker(user);
+      final build = widget.destination ?? (w) => QueryCaptureScreen(worker: w);
+      navigator.pushReplacement(MaterialPageRoute(builder: (_) => build(worker)));
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {

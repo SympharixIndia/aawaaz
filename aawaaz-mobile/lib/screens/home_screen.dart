@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import 'manager_login_screen.dart';
+import 'query_capture_screen.dart';
 import 'registration_screen.dart';
 import 'status_by_ticket_screen.dart';
 import 'worker_login_screen.dart';
@@ -42,13 +43,23 @@ class HomeScreen extends StatelessWidget {
                 icon: Icons.mic,
                 label: 'Register a request',
                 primary: true,
-                onPressed: () => _go(context, const WorkerLoginScreen()),
+                onPressed: () => _go(
+                  context,
+                  WorkerLoginScreen(
+                    destination: (w) => QueryCaptureScreen(worker: w),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               _BigButton(
                 icon: Icons.fact_check,
                 label: 'Check request status',
-                onPressed: () => _go(context, const StatusByTicketScreen()),
+                onPressed: () => _go(
+                  context,
+                  WorkerLoginScreen(
+                    destination: (w) => StatusByTicketScreen(worker: w),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               _BigButton(

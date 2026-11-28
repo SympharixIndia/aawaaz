@@ -168,14 +168,16 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [x] App: `RequestDto.workerReply`; My Requests + status-by-ticket show/play the
       worker-language reply.
 
-### Step V4-3 — Voice number POC
-- [ ] Log `speech_to_text` output for spoken ticket numbers (hi/bn/en) on device.
-- [ ] Build the spoken-number → integer normalizer (Indic numerals + number words).
+### Step V4-3 — Voice number normalization ✅
+- [x] `parseSpokenTicket()` — ASCII digits, Devanagari/Bengali numerals, and digit-by-digit
+      number words (en/hi/bn) → int; unit-tested (8 cases).
+- [ ] Confirm on-device what `speech_to_text` returns for spoken numbers (tune if needed).
 
-### Step V4-4 — Voice ticket entry (app)
-- [ ] Gate "Check request status" behind worker login; use the worker's profile language.
-- [ ] Mic + TTS prompt ("tell me your ticket number") in that language.
-- [ ] Capture → normalize → `GET /api/requests/{id}`; manual typing stays as fallback.
+### Step V4-4 — Voice ticket entry (app) ✅
+- [x] "Check request status" is gated behind worker login (`WorkerLoginScreen` now takes a
+      `destination`); uses the worker's profile language.
+- [x] `StatusByTicketScreen(worker)`: mic + TTS prompt in that language → STT →
+      `parseSpokenTicket` → `GET /api/requests/{id}`; typed entry stays as fallback.
 
 ### Step V4-W — Web build (Feature 4, §6)
 - [ ] Add web support (`flutter create --platforms=web .`); run via `flutter run -d chrome`.
@@ -192,9 +194,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [ ] End-to-end on device: worker speaks (lang) → English on dashboard → manager replies →
       worker hears it in their language → voice ticket lookup works.
 
-**Current status:** V4-0/1/2 done — Sarvam wired (live-verified), worker requests stored as
-English, manager replies translated to the worker's language (shown/played in the app). Next
-on this branch: V4-3/V4-4 (voice ticket entry), V4-W (web build), V4-D (Docker/EC2).
+**Current status:** V4-0 through V4-4 done on branch `v4-features` — Sarvam translation,
+English-canonical requests, worker-language replies, and login-gated **voice ticket entry**.
+Next on this branch: V4-W (web build + CORS), V4-D (backend Dockerfile / EC2).
 
 ---
 
