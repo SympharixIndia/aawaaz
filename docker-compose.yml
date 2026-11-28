@@ -1,0 +1,17 @@
+# Start Aawaaz with a single command:  docker compose up --build
+#
+# Brings up the backend API on http://localhost:8080 (in-memory DB, seeded with
+# the default manager admin/admin123 and the categories). The mobile/web app
+# then points at this host:8080.
+#
+# Translation (Sarvam) is optional: set SARVAM_API_KEY in your shell or in a
+# `.env` file next to this one (docker compose reads it automatically). Without
+# it the app still runs — text is just stored/shown untranslated.
+services:
+  backend:
+    build: ./aawaaz-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SARVAM_API_KEY: "${SARVAM_API_KEY:-}"
+    restart: unless-stopped

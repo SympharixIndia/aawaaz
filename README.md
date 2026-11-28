@@ -208,18 +208,27 @@ Base URL: `http://<host>:8080`. All JSON.
 
 ---
 
-## Deploying the backend (Docker)
+## Running with Docker
 
-The backend ships a `Dockerfile`, so a single container is all the server needs (translation is
-a hosted API — nothing else to run):
+From the repository root, one command builds and starts the backend:
 
 ```bash
-cd aawaaz-backend
-docker build -t aawaaz-backend .
-docker run -p 8080:8080 -e SARVAM_API_KEY=your_key_here aawaaz-backend
+docker compose up --build
 ```
 
-Point the app's `API_HOST` at the host's address and allow outbound HTTPS to `api.sarvam.ai`.
+The API comes up on **`http://localhost:8080`** (in-memory DB, seeded with `admin`/`admin123`
+and the categories). The mobile/web app then points its `API_HOST` at this host.
+
+**Translation** is optional: provide a Sarvam key and `docker compose` picks it up automatically
+— either export it, or copy `.env.example` to `.env` and fill it in:
+
+```bash
+export SARVAM_API_KEY=your_key_here    # (or: cp .env.example .env && edit)
+docker compose up --build
+```
+
+Without a key the app still runs; text is just stored/shown untranslated. The backend needs
+outbound HTTPS to `api.sarvam.ai` for live translation.
 
 ---
 
