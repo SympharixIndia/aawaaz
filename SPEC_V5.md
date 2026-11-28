@@ -135,15 +135,17 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [ ] Spike on a host: build, embed a few faces, pick a cosine threshold, record CPU latency.
       (Can't run in CI — needs the model + real photos.)
 
-### Step V5-1 — Data model
-- [ ] `users`: add `face_embedding`; schema + `User` entity + repository.
+### Step V5-1 — Data model ✅
+- [x] `users.face_embedding` (CLOB, CSV of floats); `User` entity + schema updated.
 
 ### Step V5-2 — Registration with photo
-- [ ] Backend: `POST /api/workers` accepts `photoBase64` → embed via face server → store embedding.
+- [x] Backend: `POST /api/workers` accepts optional `photoBase64` → `FaceService.embed` →
+      store embedding. Bad photo → 400 (retake); face server down → registers PIN-only.
 - [ ] App: front-camera capture in registration (preview/retake) → send photo.
 
 ### Step V5-3 — Face login
-- [ ] Backend: `POST /api/auth/face` → embed → 1:N cosine match ≥ threshold → `UserDto` / 401.
+- [x] Backend: `POST /api/auth/face` → embed → 1:N cosine match ≥ `face.match-threshold`
+      (0.40) → `UserResponse` / 401; `FaceService` wraps the face server (`/embed`).
 - [ ] App: "Scan face" on both worker entries → camera → face login; username/PIN as backup.
 
 ### Step V5-4 — Single-container packaging
@@ -153,5 +155,6 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step V5-5 — Verify
 - [ ] End-to-end on device: register with face → face login on both worker entries → PIN backup works.
 
-**Current status:** V5-0 face server scaffolded (`aawaaz-face/`). Next: V5-1 (data model —
-`face_embedding` on `users`), then V5-2 (registration with photo).
+**Current status:** V5-0 (face server), V5-1 (data model), and the **backend** of V5-2/V5-3
+(register-with-photo + `POST /api/auth/face` 1:N match) done and tested. Next: the **app**
+camera flows (registration capture + "Scan face" login), then V5-4 (single combined container).

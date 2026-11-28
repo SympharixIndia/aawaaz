@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -39,6 +40,11 @@ public class User {
 
     @Column(name = "language_code", nullable = false)
     private String languageCode = "en-IN";
+
+    /** Face embedding as a CSV of floats; null when no face is enrolled. */
+    @Lob
+    @Column(name = "face_embedding")
+    private String faceEmbedding;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -112,5 +118,13 @@ public class User {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getFaceEmbedding() {
+        return faceEmbedding;
+    }
+
+    public void setFaceEmbedding(String faceEmbedding) {
+        this.faceEmbedding = faceEmbedding;
     }
 }

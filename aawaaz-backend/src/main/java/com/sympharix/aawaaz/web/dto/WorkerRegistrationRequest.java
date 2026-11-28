@@ -7,5 +7,6 @@ public record WorkerRegistrationRequest(
         @NotBlank String name,
         @NotBlank String password,
         String profession,
-        @NotBlank String languageCode) {
+        @NotBlank String languageCode,
+        String photoBase64) {
 }

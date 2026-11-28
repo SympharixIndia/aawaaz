@@ -20,6 +20,7 @@ CREATE TABLE users (
     user_type     VARCHAR(16)  NOT NULL,
     profession    VARCHAR(64),
     language_code VARCHAR(8)   NOT NULL DEFAULT 'en-IN',
+    face_embedding CLOB,                                 -- CSV of floats; null = no face enrolled
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_user_type CHECK (user_type IN ('MANAGER', 'WORKER'))
 );
