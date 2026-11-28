@@ -3,6 +3,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- Network access for the backend API -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Front camera, for face registration + face login -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
     <application
         android:label="aawaaz"
         android:name="${applicationName}"

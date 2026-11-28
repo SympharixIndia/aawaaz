@@ -141,12 +141,14 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step V5-2 — Registration with photo
 - [x] Backend: `POST /api/workers` accepts optional `photoBase64` → `FaceService.embed` →
       store embedding. Bad photo → 400 (retake); face server down → registers PIN-only.
-- [ ] App: front-camera capture in registration (preview/retake) → send photo.
+- [x] App: `camera` plugin + `FaceCaptureScreen` (front-camera preview + capture → base64);
+      registration has a "Capture face" step; photo sent with `registerWorker`.
 
 ### Step V5-3 — Face login
 - [x] Backend: `POST /api/auth/face` → embed → 1:N cosine match ≥ `face.match-threshold`
       (0.40) → `UserResponse` / 401; `FaceService` wraps the face server (`/embed`).
-- [ ] App: "Scan face" on both worker entries → camera → face login; username/PIN as backup.
+- [x] App: "Scan face" on the worker login (serves both "Register a request" and "Check
+      status" via the `destination` builder); username/PIN kept as backup; Android CAMERA permission.
 
 ### Step V5-4 — Single-container packaging
 - [ ] One combined Dockerfile (JRE + Python + model + entrypoint running both); update compose.
@@ -155,6 +157,6 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 ### Step V5-5 — Verify
 - [ ] End-to-end on device: register with face → face login on both worker entries → PIN backup works.
 
-**Current status:** V5-0 (face server), V5-1 (data model), and the **backend** of V5-2/V5-3
-(register-with-photo + `POST /api/auth/face` 1:N match) done and tested. Next: the **app**
-camera flows (registration capture + "Scan face" login), then V5-4 (single combined container).
+**Current status:** V5-0..V5-3 done — face server, data model, backend enrolment + 1:N face
+login, and the app camera flows (registration capture + "Scan face"). Last step: V5-4 (fold the
+face server into the single combined container + compose).

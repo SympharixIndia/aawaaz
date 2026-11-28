@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../data/api_client.dart';
 import '../data/backend_service.dart';
+import 'face_capture_screen.dart';
 
 /// New-worker registration: username + name + numeric PIN + profession + language.
 /// Submits to the backend (`POST /api/workers`).
@@ -22,6 +23,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _pin = TextEditingController();
   final _profession = TextEditingController();
   String _languageCode = supportedLanguages.first.code;
+  String? _photoBase64;
   bool _submitting = false;
 
   @override
@@ -31,6 +33,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _pin.dispose();
     _profession.dispose();
     super.dispose();
+  }
+
+  Future<void> _captureFace() async {
+    final photo = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const FaceCaptureScreen(title: 'Capture your face')),
+    );
+    if (photo != null && photo.isNotEmpty) {
+      setState(() => _photoBase64 = photo);
+    }
   }
 
   Future<void> _submit() async {
@@ -48,6 +59,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         password: _pin.text,
         profession: _profession.text.trim().isEmpty ? null : _profession.text.trim(),
         languageCode: _languageCode,
+        photoBase64: _photoBase64,
       );
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(
@@ -138,6 +150,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       DropdownMenuItem(value: lang.code, child: Text(lang.label)),
                   ],
                   onChanged: (v) => setState(() => _languageCode = v!),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: _submitting ? null : _captureFace,
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52)),
+                  icon: Icon(_photoBase64 == null
+                      ? Icons.camera_alt
+                      : Icons.check_circle),
+                  label: Text(_photoBase64 == null
+                      ? 'Capture face (for face login)'
+                      : 'Face captured — tap to retake'),
                 ),
                 const SizedBox(height: 32),
                 FilledButton(

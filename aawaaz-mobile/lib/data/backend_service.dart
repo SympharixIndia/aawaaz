@@ -12,7 +12,7 @@ class BackendService {
   final ApiClient _api;
   BackendService([ApiClient? api]) : _api = api ?? ApiClient();
 
-  /// Logs in a manager or worker. Throws [ApiException] (401 on bad credentials).
+  /// Logs in a manager or worker by password. Throws [ApiException] (401 on bad credentials).
   Future<UserDto> login(String username, String password) async {
     final json = await _api.post('/api/auth/login', {
       'username': username,
@@ -21,13 +21,20 @@ class BackendService {
     return UserDto.fromJson(json as Map<String, dynamic>);
   }
 
-  /// Registers a worker. Throws [ApiException] (409 if the username is taken).
+  /// Logs in a worker by face (1:N). Throws [ApiException] (401 no match / 400 bad photo).
+  Future<UserDto> faceLogin(String photoBase64) async {
+    final json = await _api.post('/api/auth/face', {'photoBase64': photoBase64});
+    return UserDto.fromJson(json as Map<String, dynamic>);
+  }
+
+  /// Registers a worker (optionally enrolling a face). 409 if the username is taken.
   Future<UserDto> registerWorker({
     required String username,
     required String name,
     required String password,
     String? profession,
     required String languageCode,
+    String? photoBase64,
   }) async {
     final json = await _api.post('/api/workers', {
       'username': username,
@@ -35,6 +42,7 @@ class BackendService {
       'password': password,
       'profession': profession,
       'languageCode': languageCode,
+      'photoBase64': photoBase64,
     });
     return UserDto.fromJson(json as Map<String, dynamic>);
   }

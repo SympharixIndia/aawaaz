@@ -6,6 +6,7 @@ import '../data/api_client.dart';
 import '../data/backend_service.dart';
 import '../models/api/user_dto.dart';
 import '../models/worker.dart';
+import 'face_capture_screen.dart';
 import 'query_capture_screen.dart';
 
 /// Worker login (username + numeric PIN) — authenticates against the backend,
@@ -41,6 +42,38 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
         languageCode: u.languageCode,
         registeredAt: DateTime.now(),
       );
+
+  void _goToDestination(UserDto user) {
+    final worker = _toWorker(user);
+    final build = widget.destination ?? (w) => QueryCaptureScreen(worker: w);
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (_) => build(worker)));
+  }
+
+  Future<void> _faceLogin() async {
+    final photo = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const FaceCaptureScreen(title: 'Scan your face')),
+    );
+    if (photo == null || photo.isEmpty || !mounted) return;
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    final backend = context.read<BackendService>();
+    try {
+      final user = await backend.faceLogin(photo);
+      if (!mounted) return;
+      _goToDestination(user);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.statusCode == 401
+            ? 'Face not recognised — try again or use username & PIN.'
+            : e.message;
+        _submitting = false;
+      });
+    }
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() || _submitting) return;
@@ -80,6 +113,18 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                FilledButton.icon(
+                  onPressed: _submitting ? null : _faceLogin,
+                  style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(60)),
+                  icon: const Icon(Icons.face),
+                  label: const Text('Scan face', style: TextStyle(fontSize: 18)),
+                ),
+                const SizedBox(height: 8),
+                Text('— or use username & PIN —',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _username,
                   decoration: const InputDecoration(
