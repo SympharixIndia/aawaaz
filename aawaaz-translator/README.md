@@ -15,10 +15,18 @@ POST /translate             → {"translation": "..."}
 IndicTrans2 FLORES codes `eng_Latn` / `hin_Deva` / `ben_Beng`). `indic → indic` pivots through
 English using the two distilled models.
 
+## Hugging Face access (one-time)
+
+The IndicTrans2 models are **gated** on Hugging Face, so the build needs an authenticated token:
+1. Create a free account at huggingface.co and a **read** access token (Settings → Access Tokens).
+2. Open each model page and click **Agree / access** (usually instant):
+   - `ai4bharat/indictrans2-en-indic-dist-200M`
+   - `ai4bharat/indictrans2-indic-en-dist-200M`
+
 ## Run with Docker (as deployed)
 
 ```bash
-docker build -t aawaaz-translator .
+DOCKER_BUILDKIT=1 docker build --build-arg HF_TOKEN=hf_xxxxxxxx -t aawaaz-translator .
 docker run --rm -p 8000:8000 aawaaz-translator
 ```
 
@@ -37,6 +45,7 @@ curl -s -X POST http://localhost:8000/translate \
 python -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
+export HF_TOKEN=hf_xxxxxxxx   # gated models (see above)
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
