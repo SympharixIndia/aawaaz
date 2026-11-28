@@ -186,8 +186,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 
 ### Step V4-D — Dockerize & deploy (single EC2, §9) ✅
 - [x] `aawaaz-backend/Dockerfile` — multi-stage (build jar with `mvnw` → run on JRE), `EXPOSE 8080`.
-- [ ] On the EC2: `docker build`, then `docker run -e SARVAM_API_KEY=... -p 8080:8080`; allow
-      outbound HTTPS to `api.sarvam.ai`.
+- [x] Root `docker-compose.yml` — `docker compose up` builds + starts the backend (no extra
+      steps); `SARVAM_API_KEY` picked up from env/`.env` (optional). `.env.example` committed.
+- [ ] On the EC2: `docker compose up -d`; open 8080; allow outbound HTTPS to `api.sarvam.ai`.
 
 ### Step V4-5 — Polish & verify
 - [ ] End-to-end on device: worker speaks (lang) → English on dashboard → manager replies →

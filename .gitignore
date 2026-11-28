@@ -1,0 +1,2 @@
+# Root compose env (may hold the Sarvam key) — keep out of git.
+/.env
