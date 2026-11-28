@@ -36,7 +36,7 @@ class _MyStatusScreenState extends State<MyStatusScreen> {
       _future = _backend.requestsForWorker(int.parse(widget.worker.id)));
 
   Future<void> _speakStatus(RequestDto r) =>
-      _voice.speak(_p.statusSpeech(r.managerComment), widget.worker.languageCode);
+      _voice.speak(_p.statusSpeech(r.workerReply), widget.worker.languageCode);
 
   @override
   void dispose() {
@@ -98,8 +98,8 @@ class _StatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final hasReply =
-        request.managerComment != null && request.managerComment!.trim().isNotEmpty;
+    final reply = request.workerReply;
+    final hasReply = reply != null && reply.trim().isNotEmpty;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
@@ -146,7 +146,7 @@ class _StatusCard extends StatelessWidget {
                   Text(hasReply ? 'Manager reply' : 'Status',
                       style: TextStyle(color: scheme.outline, fontSize: 12)),
                   const SizedBox(height: 4),
-                  Text(hasReply ? request.managerComment! : 'Still pending'),
+                  Text(hasReply ? reply : 'Still pending'),
                 ],
               ),
             ),

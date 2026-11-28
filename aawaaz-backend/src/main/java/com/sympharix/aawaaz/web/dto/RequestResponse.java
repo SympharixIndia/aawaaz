@@ -20,6 +20,8 @@ public record RequestResponse(
         RequestStatus status,
         String managerComment,
         String managerCommentLanguage,
+        String managerCommentTranslated,
+        String managerCommentTranslatedLanguage,
         Instant commentedAt,
         Instant createdAt,
         Instant updatedAt) {
@@ -31,6 +33,7 @@ public record RequestResponse(
                 r.getTranslatedText(), r.getTranslatedLanguage(),
                 r.getCategoryKey(), r.getUrgency(), r.getStatus(),
                 r.getManagerComment(), r.getManagerCommentLanguage(),
+                r.getManagerCommentTranslated(), r.getManagerCommentTranslatedLanguage(),
                 r.getCommentedAt(), r.getCreatedAt(), r.getUpdatedAt());
     }
 }

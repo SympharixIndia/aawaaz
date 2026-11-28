@@ -156,15 +156,17 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
       `POST api.sarvam.ai/translate` with `api-subscription-key`; app locale codes pass through.
 - [x] Config `sarvam.*` (key via `SARVAM_API_KEY`); blank-key / error → pass-through fallback.
 - [x] Removed the self-hosted `aawaaz-translator/` service and the pass-through stub.
-- [ ] Validate live with the real key (sample hi/bn↔en) once the backend runs with `SARVAM_API_KEY`.
+- [x] Validated live with the real key: hi→en ("I need a holiday tomorrow") and en→bn both 200.
 
-### Step V4-1 — Worker → English (backend)
-- [ ] On create, translate `original_language → en` and store in `translated_text` (`en-IN`),
+### Step V4-1 — Worker → English (backend) ✅
+- [x] On create, translate `original_language → en` and store in `translated_text` (`en-IN`),
       regardless of manager language. (Dashboard already reads `translated_text`.)
 
-### Step V4-2 — Manager → worker language (backend)
-- [ ] On manager comment, translate → worker's language; store/serve it to the worker.
-- [ ] App: My Requests + status-by-ticket show/play the worker-language reply.
+### Step V4-2 — Manager → worker language ✅
+- [x] On manager comment, translate → worker's language; store `manager_comment_translated`
+      (+ language) and expose it in `RequestResponse`.
+- [x] App: `RequestDto.workerReply`; My Requests + status-by-ticket show/play the
+      worker-language reply.
 
 ### Step V4-3 — Voice number POC
 - [ ] Log `speech_to_text` output for spoken ticket numbers (hi/bn/en) on device.
@@ -190,9 +192,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done.
 - [ ] End-to-end on device: worker speaks (lang) → English on dashboard → manager replies →
       worker hears it in their language → voice ticket lookup works.
 
-**Current status:** Translation engine switched to **Sarvam** and wired into the backend
-(`SarvamTranslationService`, V4-0 done); self-hosted translator removed. Next: V4-1 (store
-worker requests as English) and V4-2 (translate manager replies to the worker's language).
+**Current status:** V4-0/1/2 done — Sarvam wired (live-verified), worker requests stored as
+English, manager replies translated to the worker's language (shown/played in the app). Next
+on this branch: V4-3/V4-4 (voice ticket entry), V4-W (web build), V4-D (Docker/EC2).
 
 ---
 

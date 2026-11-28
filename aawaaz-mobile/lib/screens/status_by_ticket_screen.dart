@@ -68,7 +68,7 @@ class _StatusByTicketScreenState extends State<StatusByTicketScreen> {
 
   void _speak(RequestDto r) {
     final prompts = Prompts.forLanguage(r.originalLanguage);
-    _voice.speak(prompts.statusSpeech(r.managerComment), r.originalLanguage);
+    _voice.speak(prompts.statusSpeech(r.workerReply), r.originalLanguage);
   }
 
   @override
@@ -136,8 +136,8 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final hasReply =
-        request.managerComment != null && request.managerComment!.trim().isNotEmpty;
+    final reply = request.workerReply;
+    final hasReply = reply != null && reply.trim().isNotEmpty;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -176,7 +176,7 @@ class _ResultCard extends StatelessWidget {
                   Text(hasReply ? 'Manager reply' : 'Status',
                       style: TextStyle(color: scheme.outline, fontSize: 12)),
                   const SizedBox(height: 4),
-                  Text(hasReply ? request.managerComment! : 'Still pending'),
+                  Text(hasReply ? reply : 'Still pending'),
                 ],
               ),
             ),

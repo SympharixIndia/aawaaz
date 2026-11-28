@@ -41,7 +41,9 @@ public class RequestService {
         this.translation = translation;
     }
 
-    /** Files a request: stores it verbatim and a manager-language translation (§3.1). */
+    private static final String ENGLISH = "en-IN";
+
+    /** Files a request: stores it verbatim and a canonical English translation (§3.1). */
     public Request create(CreateRequestRequest req) {
         if (!users.existsById(req.workerId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found");
@@ -58,13 +60,10 @@ public class RequestService {
         r.setUrgency(req.urgency());
         r.setStatus(RequestStatus.OPEN);
 
-        // Translate into the manager's language and store it alongside the original.
-        String managerLang = users.findFirstByUserType(UserType.MANAGER)
-                .map(User::getLanguageCode)
-                .orElse(req.originalLanguage());
-        r.setTranslatedLanguage(managerLang);
+        // Always translate to English (canonical) — the manager dashboard shows this.
+        r.setTranslatedLanguage(ENGLISH);
         r.setTranslatedText(
-                translation.translate(req.originalText(), req.originalLanguage(), managerLang));
+                translation.translate(req.originalText(), req.originalLanguage(), ENGLISH));
 
         return requests.save(r);
     }
@@ -116,10 +115,19 @@ public class RequestService {
             r.setStatus(req.status());
         }
         if (req.managerComment() != null) {
+            String managerLang = Optional.ofNullable(req.managerCommentLanguage())
+                    .orElseGet(this::managerLanguage);
             r.setManagerComment(req.managerComment());
-            r.setManagerCommentLanguage(
-                    Optional.ofNullable(req.managerCommentLanguage())
-                            .orElseGet(() -> managerLanguage()));
+            r.setManagerCommentLanguage(managerLang);
+
+            // Translate the reply into the worker's language for playback (§3.2).
+            String workerLang = users.findById(r.getWorkerId())
+                    .map(User::getLanguageCode)
+                    .orElse(managerLang);
+            r.setManagerCommentTranslatedLanguage(workerLang);
+            r.setManagerCommentTranslated(
+                    translation.translate(req.managerComment(), managerLang, workerLang));
+
             r.setCommentedAt(Instant.now());
         }
         r.setUpdatedAt(Instant.now());
